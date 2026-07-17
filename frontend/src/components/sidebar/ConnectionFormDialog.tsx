@@ -11,12 +11,18 @@ import {
 } from "@heroui/react";
 import { openFilePicker } from "../../ipc/commands";
 import type { ConnectionConfig, Protocol, Subscription } from "../../ipc/types";
+import { PlusIcon, RocketIcon, XIcon } from "lucide-react";
 
 const DEFAULT_PORTS: Record<Protocol, number> = {
   mqtt: 1883,
   mqtts: 8883,
   ws: 8083,
   wss: 8084,
+};
+
+const generateRandomClientId = () => {
+  const randomString = Math.random().toString(36).substring(2, 10);
+  return `mqtt-access-${randomString}`;
 };
 
 export function ConnectionFormDialog({
@@ -30,7 +36,12 @@ export function ConnectionFormDialog({
   onSave: (config: ConnectionConfig) => void;
   onCancel: () => void;
 }) {
-  const [config, setConfig] = useState<ConnectionConfig>({ ...initial });
+  const [config, setConfig] = useState<ConnectionConfig>({
+    ...initial,
+    port: initial.port ?? DEFAULT_PORTS[initial.protocol],
+    clientId: initial.clientId ?? generateRandomClientId(),
+    protocol: "mqtt",
+  });
   const patch = (p: Partial<ConnectionConfig>) =>
     setConfig((c) => ({ ...c, ...p }));
 
@@ -67,7 +78,7 @@ export function ConnectionFormDialog({
     }
   };
 
-  const submit = (e: React.FormEvent) => {
+  const submit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!config.host.trim()) return;
     onSave({
@@ -77,32 +88,23 @@ export function ConnectionFormDialog({
     });
   };
 
-  const inputCls = "bg-[#3c3c3c] text-[#cccccc]";
+  const headerLabel = isNew ? "Add connection" : "Edit connection";
 
   return (
-    <Modal
-      isOpen
-      onOpenChange={(isOpen) => !isOpen && onCancel()}
-      defaultOpen
-      // classNames={{
-      //   base: "bg-[#252526] border border-[#3c3c3c] text-[#cccccc]",
-      //   header:
-      //     "border-b border-[#3c3c3c] text-[#cccccc] text-base font-semibold pb-3",
-      //   body: "py-3 gap-3",
-      //   footer: "border-t border-[#3c3c3c] pt-3 gap-2",
-      //   closeButton: "text-[#969696] hover:text-[#cccccc] hover:bg-[#3c3c3c]",
-      // }}
-    >
+    <Modal isOpen onOpenChange={(isOpen) => !isOpen && onCancel()} defaultOpen>
       <Modal.Backdrop>
         <Modal.Container>
-          <Modal.Dialog>
+          <Modal.Dialog className="bg-neutral-900">
             <Modal.CloseTrigger />
             <Modal.Header>
-              {isNew ? "Add connection" : "Edit connection"}
+              <Modal.Icon>
+                <RocketIcon />
+              </Modal.Icon>
+              <Modal.Heading>{headerLabel}</Modal.Heading>
             </Modal.Header>
             <Modal.Body>
-              <form onSubmit={submit}>
-                <TextField className="flex flex-col gap-1" isRequired>
+              <form onSubmit={submit} className="flex flex-col gap-1 ">
+                <TextField isRequired>
                   <Label htmlFor="name">Name</Label>
                   <Input
                     id="name"
@@ -110,7 +112,6 @@ export function ConnectionFormDialog({
                     onChange={(e) => patch({ name: e.target.value })}
                     placeholder="My broker"
                     autoFocus
-                    // size="sm"
                     variant="primary"
                     // classNames={{ inputWrapper: inputCls }}
                   />
@@ -118,14 +119,10 @@ export function ConnectionFormDialog({
 
                 <div className="flex gap-2 items-end">
                   <Select
-                    // label="Protocol"
-                    // selectedKeys={[config.protocol]}
-                    // onChange={(e) => setProtocol(e.target.value as Protocol)}
-                    className="w-[130px] shrink-0"
-                    // classNames={{
-                    //   trigger: inputCls,
-                    //   value: "text-[#cccccc]",
-                    // }}
+                    value={config.protocol}
+                    onChange={(value) =>
+                      setProtocol((value ? value : "mqtt") as Protocol)
+                    }
                   >
                     <Label>Protocol</Label>
                     <Select.Trigger>
@@ -142,14 +139,17 @@ export function ConnectionFormDialog({
                     </Select.Popover>
                   </Select>
 
-                  <TextField className="flex flex-col gap-1" isRequired>
+                  <TextField
+                    //  className="flex flex-col gap-1"
+                    isRequired
+                  >
                     <Label htmlFor="host">Host</Label>
                     <Input
                       id="host"
                       value={config.host}
                       onChange={(e) => patch({ host: e.target.value })}
                       placeholder="broker.example.com"
-                      className="flex-1"
+                      // className="flex-1"
                       // classNames={{ inputWrapper: inputCls }}
                     />
                   </TextField>
@@ -163,7 +163,7 @@ export function ConnectionFormDialog({
                       max={65535}
                       value={String(config.port)}
                       onChange={(e) => patch({ port: Number(e.target.value) })}
-                      className="w-[90px] shrink-0"
+                      // className="w-[90px] shrink-0"
                       // classNames={{ inputWrapper: inputCls }}
                     />
                   </TextField>
@@ -192,7 +192,7 @@ export function ConnectionFormDialog({
                         patch({ username: e.target.value || null })
                       }
                       autoComplete="off"
-                      className="flex-1"
+                      // className="flex-1"
                       // classNames={{ inputWrapper: inputCls }}
                     />
                   </TextField>
@@ -205,7 +205,7 @@ export function ConnectionFormDialog({
                         patch({ password: e.target.value || null })
                       }
                       autoComplete="new-password"
-                      className="flex-1"
+                      // className="flex-1"
                       // classNames={{ inputWrapper: inputCls }}
                     />
                   </TextField>
@@ -220,7 +220,7 @@ export function ConnectionFormDialog({
                       onChange={(e) =>
                         patch({ clientId: e.target.value || null })
                       }
-                      className="flex-1"
+                      // className="flex-1"
                       // classNames={{
                       //   inputWrapper: inputCls,
                       //   description: "text-[#6e7681]",
@@ -236,7 +236,7 @@ export function ConnectionFormDialog({
                       onChange={(e) =>
                         patch({ keepAliveSecs: e.target.valueAsNumber })
                       }
-                      className="w-[110px] shrink-0"
+                      // className="w-[110px] shrink-0"
                       // classNames={{ inputWrapper: inputCls }}
                     />
                   </TextField>
@@ -252,7 +252,7 @@ export function ConnectionFormDialog({
                         patch({ historyLimit: e.target.valueAsNumber })
                       }
                       // variant="outline"
-                      className="w-[110px] shrink-0"
+                      // className="w-[110px] shrink-0"
                       // classNames={{ inputWrapper: inputCls }}
                     />
                   </TextField>
@@ -273,23 +273,15 @@ export function ConnectionFormDialog({
                           }
                           placeholder="topic/filter/#"
                           // variant="outline"
-                          className="flex-1"
+                          // className="flex-1"
                           // classNames={{ inputWrapper: inputCls }}
                         />
                       </TextField>
 
                       <Select
-                        // selectedKeys={[String(sub.qos)]}
                         onChange={(value) =>
                           setSubscription(i, { qos: Number(value) })
                         }
-                        // size="sm"
-                        // variant="outline"
-                        className="w-[90px] shrink-0"
-                        // classNames={{
-                        //   trigger: inputCls,
-                        //   value: "text-[#cccccc]",
-                        // }}
                         aria-label="QoS"
                       >
                         <Label>QoS</Label>
@@ -307,8 +299,7 @@ export function ConnectionFormDialog({
                       </Select>
 
                       <Button
-                        size="sm"
-                        // variant="outline"
+                        variant="ghost"
                         isIconOnly
                         onPress={() =>
                           patch({
@@ -317,15 +308,14 @@ export function ConnectionFormDialog({
                             ),
                           })
                         }
-                        className="bg-[#2d2d2d] text-[#cccccc] h-8 w-8 min-w-0"
                       >
-                        ✕
+                        <XIcon />
                       </Button>
                     </div>
                   ))}
                   <Button
                     size="sm"
-                    // variant="outline"
+                    variant="secondary"
                     onPress={() =>
                       patch({
                         subscriptions: [
@@ -334,9 +324,9 @@ export function ConnectionFormDialog({
                         ],
                       })
                     }
-                    className="self-start bg-[#2d2d2d] text-[#cccccc]"
                   >
-                    + Add subscription
+                    <PlusIcon />
+                    Add subscription
                   </Button>
                 </div>
 
