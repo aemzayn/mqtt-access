@@ -22,6 +22,7 @@
     "nanoid": "^5.1.16",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-resizable-panels": "^4.12.2",
     "tailwind-merge": "^3.6.0",
     "uplot": "^1.6.32",
     "zustand": "^5.0.14"

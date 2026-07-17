@@ -28,7 +28,7 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-72 min-w-50 bg-taupe-900 border-r border-taupe-800 flex flex-col">
+    <aside className="h-full w-full bg-taupe-900 border-r border-taupe-800 flex flex-col">
       <div className="flex items-center justify-between px-3 py-2 shrink-0">
         <span className="text-sm font-bold uppercase flex items-center gap-1 ">
           Connections
