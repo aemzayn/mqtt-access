@@ -2,14 +2,30 @@ package main
 
 import (
 	"context"
+	_ "embed"
 	"encoding/base64"
 	"fmt"
+	"strings"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 
 	mqttpkg "mqtt-access/mqtt"
 	"mqtt-access/storage"
 )
+
+//go:embed VERSION
+var embeddedVersion string
+
+// AppInfo mirrors the frontend's AppInfo type.
+type AppInfo struct {
+	Name           string `json:"name"`
+	Version        string `json:"version"`
+	Developer      string `json:"developer"`
+	DeveloperEmail string `json:"developerEmail"`
+	Website        string `json:"website"`
+	Github         string `json:"github"`
+	License        string `json:"license"`
+}
 
 // StoredLayout mirrors the frontend's PersistedLayout type.
 type StoredLayout struct {
@@ -213,6 +229,18 @@ func (a *App) LoadSettings() (*AppSettings, error) {
 
 func (a *App) SaveSettings(settings AppSettings) error {
 	return storage.Save("settings.json", settings)
+}
+
+func (a *App) GetAppInfo() AppInfo {
+	return AppInfo{
+		Name:           "MQTT Access",
+		Version:        strings.TrimSpace(embeddedVersion),
+		Developer:      "Ahmad Muslih Zain",
+		DeveloperEmail: "ahmad.muslih22@gmail.com",
+		Website:        "https://mqtt-access.com",
+		Github:         "https://github.com/aemzayn/mqtt-access",
+		License:        "MIT",
+	}
 }
 
 // ── System dialogs ────────────────────────────────────────────────────────────

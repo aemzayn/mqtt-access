@@ -508,6 +508,52 @@ body,
   width: 420px;
 }
 
+.about-section {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.about-heading {
+  font-size: calc(11px * var(--font-scale));
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.about-app {
+  font-weight: 600;
+}
+
+.about-version {
+  font-weight: 400;
+  color: var(--text-dim);
+}
+
+.about-row {
+  color: var(--text-dim);
+  font-size: calc(12px * var(--font-scale));
+  margin-top: 3px;
+}
+
+.about-link {
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.about-link:hover {
+  text-decoration: underline;
+}
+
+.about-links {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+  margin-left: -7px;
+}
+
 .sidebar-list {
   flex: 1;
   overflow-y: auto;

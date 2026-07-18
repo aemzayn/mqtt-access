@@ -9,6 +9,8 @@ export function Connect(arg1:mqtt.ConnectionConfig):Promise<void>;
 
 export function Disconnect(arg1:string):Promise<void>;
 
+export function GetAppInfo():Promise<main.AppInfo>;
+
 export function GetTopicDetails(arg1:string,arg2:string):Promise<mqtt.TopicDetails>;
 
 export function GetTopicHistory(arg1:string,arg2:string,arg3:number,arg4:any):Promise<Array<mqtt.MessageRecord>>;

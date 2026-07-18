@@ -1,5 +1,29 @@
 export namespace main {
 	
+	export class AppInfo {
+	    name: string;
+	    version: string;
+	    developer: string;
+	    developerEmail: string;
+	    website: string;
+	    github: string;
+	    license: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new AppInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.version = source["version"];
+	        this.developer = source["developer"];
+	        this.developerEmail = source["developerEmail"];
+	        this.website = source["website"];
+	        this.github = source["github"];
+	        this.license = source["license"];
+	    }
+	}
 	export class AppSettings {
 	    theme: string;
 	    fontSize: string;

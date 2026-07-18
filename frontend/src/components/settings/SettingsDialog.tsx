@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import {
   Checkbox,
   Classes,
@@ -10,7 +11,9 @@ import {
 } from "@blueprintjs/core"
 import { useSettingsStore } from "../../stores/settingsStore"
 import { LANGUAGES, useT } from "../../i18n"
+import { getAppInfo, type AppInfo } from "../../ipc/commands"
 import type { FontSizeName, LanguageName, ThemeName } from "../../ipc/commands"
+import { AboutSection } from "./AboutSection"
 
 export function SettingsDialog({ onClose }: { onClose: () => void }) {
   const theme = useSettingsStore(s => s.theme)
@@ -19,6 +22,13 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
   const language = useSettingsStore(s => s.language)
   const update = useSettingsStore(s => s.update)
   const t = useT()
+  const [appInfo, setAppInfo] = useState<AppInfo | null>(null)
+
+  useEffect(() => {
+    getAppInfo()
+      .then(setAppInfo)
+      .catch(() => {})
+  }, [])
 
   const themeOptions: { value: ThemeName; label: string }[] = [
     { value: "dark", label: t("themeDark") },
@@ -87,6 +97,8 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
             </Checkbox>
           </FormGroup>
         </div>
+
+        <AboutSection info={appInfo} />
       </DialogBody>
     </Dialog>
   )

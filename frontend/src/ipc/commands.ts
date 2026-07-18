@@ -95,3 +95,15 @@ export const loadSettings = () => call<AppSettings>("LoadSettings")
 
 export const saveSettings = (settings: AppSettings) =>
   call<void>("SaveSettings", settings)
+
+export interface AppInfo {
+  name: string
+  version: string
+  developer: string
+  developerEmail: string
+  website: string
+  github: string
+  license: string
+}
+
+export const getAppInfo = () => call<AppInfo>("GetAppInfo")

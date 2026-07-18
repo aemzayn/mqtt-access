@@ -14,6 +14,10 @@ export function Disconnect(arg1) {
   return window['go']['main']['App']['Disconnect'](arg1);
 }
 
+export function GetAppInfo() {
+  return window['go']['main']['App']['GetAppInfo']();
+}
+
 export function GetTopicDetails(arg1, arg2) {
   return window['go']['main']['App']['GetTopicDetails'](arg1, arg2);
 }

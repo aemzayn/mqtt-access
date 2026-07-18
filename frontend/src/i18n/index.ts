@@ -103,6 +103,10 @@ const en = {
   published: "Published ✓",
   payload: "Payload",
   retain: "Retain",
+  about: "About",
+  developedBy: "Developed by",
+  license: "License",
+  website: "Website",
 }
 
 export type MsgKey = keyof typeof en
@@ -197,6 +201,10 @@ const tr: Dict = {
   published: "Yayınlandı ✓",
   payload: "Veri",
   retain: "Kalıcı",
+  about: "Hakkında",
+  developedBy: "Geliştiren",
+  license: "Lisans",
+  website: "Web sitesi",
 }
 
 const id: Dict = {
@@ -288,6 +296,10 @@ const id: Dict = {
   published: "Diterbitkan ✓",
   payload: "Muatan",
   retain: "Retain",
+  about: "Tentang",
+  developedBy: "Dikembangkan oleh",
+  license: "Lisensi",
+  website: "Situs web",
 }
 
 const ja: Dict = {
@@ -379,6 +391,10 @@ const ja: Dict = {
   published: "送信済み ✓",
   payload: "ペイロード",
   retain: "Retain",
+  about: "アプリについて",
+  developedBy: "開発者",
+  license: "ライセンス",
+  website: "ウェブサイト",
 }
 
 const zh: Dict = {
@@ -470,6 +486,10 @@ const zh: Dict = {
   published: "已发布 ✓",
   payload: "负载",
   retain: "保留",
+  about: "关于",
+  developedBy: "开发者",
+  license: "许可证",
+  website: "网站",
 }
 
 const es: Dict = {
@@ -561,6 +581,10 @@ const es: Dict = {
   published: "Publicado ✓",
   payload: "Carga útil",
   retain: "Retener",
+  about: "Acerca de",
+  developedBy: "Desarrollado por",
+  license: "Licencia",
+  website: "Sitio web",
 }
 
 const de: Dict = {
@@ -652,6 +676,10 @@ const de: Dict = {
   published: "Veröffentlicht ✓",
   payload: "Payload",
   retain: "Retain",
+  about: "Info",
+  developedBy: "Entwickelt von",
+  license: "Lizenz",
+  website: "Webseite",
 }
 
 const fr: Dict = {
@@ -743,6 +771,10 @@ const fr: Dict = {
   published: "Publié ✓",
   payload: "Charge utile",
   retain: "Retenir",
+  about: "À propos",
+  developedBy: "Développé par",
+  license: "Licence",
+  website: "Site web",
 }
 
 const DICTS: Record<LanguageName, Dict> = { en, tr, id, ja, zh, es, de, fr }
