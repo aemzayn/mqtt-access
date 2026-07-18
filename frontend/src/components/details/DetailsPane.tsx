@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelectionStore } from "../../stores/selectionStore";
+import { useConnectionsStore } from "../../stores/connectionsStore";
 import { subscribeMessages } from "../../stores/messageBus";
 import { getTopicDetails, getTopicHistory } from "../../ipc/commands";
 import type { MessageRecord } from "../../ipc/types";
@@ -44,6 +45,9 @@ function TopicDetailsView({
   const [tab, setTab] = useState<Tab>("value");
   const [history, setHistory] = useState<MessageRecord[]>([]);
   const [msgCount, setMsgCount] = useState(0);
+  // Reconnecting replaces the backend store, so refetch when we come back up.
+  const connected =
+    useConnectionsStore((s) => s.statuses[connectionId]) === "connected";
 
   useEffect(() => {
     let cancelled = false;
@@ -57,14 +61,21 @@ function TopicDetailsView({
         setHistory(records);
         setMsgCount(details.msgCount);
       } catch {
-        // topic may not exist yet
+        // Topic does not exist (yet) in the current session's store.
+        if (cancelled) return;
+        setHistory([]);
+        setMsgCount(0);
       }
     })();
 
     const unsubscribe = subscribeMessages(connectionId, (event) => {
       if (event.topic !== topic) return;
       setHistory((prev) => {
-        if (prev.length > 0 && prev[0].seq >= event.message.seq) return prev;
+        const head = prev[0];
+        if (head && head.seq === event.message.seq) return prev; // duplicate of fetch
+        // Seq went backwards: the store was cleared or the connection was
+        // re-established with a fresh store — start over instead of freezing.
+        if (head && event.message.seq < head.seq) return [event.message];
         return [event.message, ...prev].slice(0, HISTORY_CAP);
       });
       setMsgCount((count) => count + 1);
@@ -74,7 +85,7 @@ function TopicDetailsView({
       cancelled = true;
       unsubscribe();
     };
-  }, [connectionId, topic]);
+  }, [connectionId, topic, connected]);
 
   const latest = history[0] ?? null;
   const chartPoints = [...history]

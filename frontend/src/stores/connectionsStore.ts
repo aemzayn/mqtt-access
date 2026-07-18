@@ -2,6 +2,13 @@ import { create } from "zustand";
 import * as commands from "../ipc/commands";
 import type { ConnectionConfig, ConnectionStatus } from "../ipc/types";
 import { resetMirror } from "./treeMirror";
+import { useSelectionStore } from "./selectionStore";
+
+const ACTIVE_STATUSES: ConnectionStatus[] = [
+  "connected",
+  "connecting",
+  "reconnecting",
+];
 
 interface ConnectionsState {
   configs: ConnectionConfig[];
@@ -14,6 +21,7 @@ interface ConnectionsState {
   remove: (id: string) => Promise<void>;
   connect: (id: string) => Promise<void>;
   disconnect: (id: string) => Promise<void>;
+  disconnectAll: () => Promise<void>;
   setStatus: (id: string, status: ConnectionStatus, error?: string) => void;
 }
 
@@ -58,10 +66,26 @@ export const useConnectionsStore = create<ConnectionsState>((set, get) => ({
       get().setStatus(id, "error", String(e));
       throw e;
     }
+    // Connecting replaces the backend handle, which loses the watched topic —
+    // re-issue it so the selected topic keeps getting live messages.
+    const topic = useSelectionStore.getState().selected[id];
+    if (topic) {
+      commands.watchTopic(id, topic).catch(() => {});
+    }
   },
 
   disconnect: async (id) => {
     await commands.disconnect(id);
+  },
+
+  disconnectAll: async () => {
+    const { statuses } = get();
+    const active = Object.entries(statuses)
+      .filter(([, status]) => ACTIVE_STATUSES.includes(status))
+      .map(([id]) => id);
+    await Promise.all(
+      active.map((id) => commands.disconnect(id).catch(() => {})),
+    );
   },
 
   setStatus: (id, status, error) =>

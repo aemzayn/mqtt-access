@@ -13,6 +13,11 @@ import { SettingsDialog } from "../settings/SettingsDialog";
 
 export function Sidebar() {
   const configs = useConnectionsStore((s) => s.configs);
+  const hasActive = useConnectionsStore((s) =>
+    Object.values(s.statuses).some(
+      (status) => status !== "disconnected" && status !== "error",
+    ),
+  );
   const [editing, setEditing] = useState<ConnectionConfig | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -40,6 +45,15 @@ export function Sidebar() {
             onClick={startAdd}
             aria-label="Add connection"
             title="Add connection"
+          />
+          <Button
+            size="small"
+            variant="minimal"
+            icon="power"
+            disabled={!hasActive}
+            onClick={() => useConnectionsStore.getState().disconnectAll()}
+            aria-label="Disconnect all"
+            title="Disconnect all"
           />
           <Button
             size="small"
