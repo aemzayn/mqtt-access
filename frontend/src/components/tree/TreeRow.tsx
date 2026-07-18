@@ -30,6 +30,9 @@ export const TreeRow = memo(
         }`}
         style={{ paddingLeft: row.depth * 14 + 4 }}
         onClick={() => onSelect(row.path)}
+        onDoubleClick={() => {
+          if (row.hasChildren) onToggle(row.path)
+        }}
       >
         <span
           className={`tree-arrow${row.hasChildren ? "" : " tree-arrow-hidden"}`}

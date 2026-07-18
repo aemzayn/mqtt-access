@@ -380,6 +380,17 @@ body,
   top: 5px;
 }
 
+/* Blueprint's `minimal` variant has its own `.bp6-dark`-scoped color rule
+   (meant for a real dark UI) that's more specific than the override above,
+   so it wins even in our light themes and renders near-invisible white
+   text. !important matches the .bp6-active fix above for the same reason. */
+.bp6-dark .bp6-html-select.bp6-minimal select,
+.bp6-dark .bp6-html-select.bp6-minimal select:hover,
+.bp6-dark .bp6-html-select.bp6-minimal select:focus,
+.bp6-dark .bp6-html-select.bp6-minimal select:active {
+  color: var(--text) !important;
+}
+
 /* form groups */
 .bp6-form-group {
   margin-bottom: 0;

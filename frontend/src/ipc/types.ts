@@ -92,7 +92,12 @@ export function defaultConnectionConfig(id: string): ConnectionConfig {
     clientId: null,
     keepAliveSecs: 60,
     cleanSession: true,
-    subscriptions: [{ topic: "#", qos: 0 }],
+    // "#" doesn't match "$"-prefixed topics per the MQTT spec, so broker
+    // stats need their own explicit subscription.
+    subscriptions: [
+      { topic: "#", qos: 0 },
+      { topic: "$SYS/#", qos: 0 },
+    ],
     tls: null,
     historyLimit: 1000,
     connectOnStartup: false,
