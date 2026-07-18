@@ -2,6 +2,7 @@ import { Button } from "@blueprintjs/core";
 import { useConnectionsStore } from "../../stores/connectionsStore";
 import { useLayoutStore } from "../../stores/layoutStore";
 import { focusPanel } from "../dock/dockApi";
+import { useT } from "../../i18n";
 import type { ConnectionConfig } from "../../ipc/types";
 
 export function ConnectionRow({
@@ -13,6 +14,7 @@ export function ConnectionRow({
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  const t = useT();
   const status =
     useConnectionsStore((s) => s.statuses[config.id]) ?? "disconnected";
   const error = useConnectionsStore((s) => s.errors[config.id]);
@@ -41,7 +43,11 @@ export function ConnectionRow({
   };
 
   const confirmDelete = () => {
-    if (window.confirm(`Delete connection "${config.name || config.host}"?`)) {
+    if (
+      window.confirm(
+        t("deleteConfirm", { name: config.name || config.host }),
+      )
+    ) {
       onDelete();
     }
   };
@@ -53,7 +59,7 @@ export function ConnectionRow({
         className="conn-row-main"
         onClick={showPanel}
         onDoubleClick={onEdit}
-        title="Click to show panel · double-click to edit"
+        title={t("rowHint")}
       >
         <div className="conn-row-name">{config.name || config.host}</div>
         <div className="conn-row-sub">
@@ -63,21 +69,21 @@ export function ConnectionRow({
       </div>
       <div className="conn-row-actions">
         <Button size="small" onClick={toggle}>
-          {isActive ? "Disconnect" : "Connect"}
+          {isActive ? t("disconnect") : t("connect")}
         </Button>
         <Button
           size="small"
           icon="edit"
           onClick={onEdit}
           aria-label="Edit"
-          title="Edit"
+          title={t("edit")}
         />
         <Button
           size="small"
           icon="trash"
           onClick={confirmDelete}
           aria-label="Delete"
-          title="Delete"
+          title={t("delete")}
         />
       </div>
     </div>

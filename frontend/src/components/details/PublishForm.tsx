@@ -8,6 +8,7 @@ import {
 } from "@blueprintjs/core";
 import { publish } from "../../ipc/commands";
 import { encodeUtf8ToB64 } from "../../lib/b64";
+import { useT } from "../../i18n";
 
 export function PublishForm({
   connectionId,
@@ -16,6 +17,7 @@ export function PublishForm({
   connectionId: string;
   initialTopic: string;
 }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [topic, setTopic] = useState(initialTopic);
   const [payload, setPayload] = useState("");
@@ -40,7 +42,7 @@ export function PublishForm({
         qos,
         retain,
       );
-      setFeedback("Published ✓");
+      setFeedback(t("published"));
       setTimeout(() => setFeedback(null), 2000);
     } catch (err) {
       setFeedback(String(err));
@@ -54,7 +56,7 @@ export function PublishForm({
         className="publish-toggle"
         onClick={() => setOpen(!open)}
       >
-        {open ? "▾" : "▸"} Publish
+        {open ? "▾" : "▸"} {t("publish")}
         {feedback && <span className="publish-feedback"> {feedback}</span>}
       </button>
       {open && (
@@ -71,7 +73,7 @@ export function PublishForm({
           <TextArea
             value={payload}
             onChange={(e) => setPayload(e.target.value)}
-            placeholder="Payload"
+            placeholder={t("payload")}
             rows={3}
             fill
           />
@@ -89,14 +91,14 @@ export function PublishForm({
               checked={retain}
               onChange={(e) => setRetain(e.target.checked)}
             >
-              Retain
+              {t("retain")}
             </Checkbox>
             <Button
               type="submit"
               intent="primary"
               className="publish-submit"
             >
-              Publish
+              {t("publish")}
             </Button>
           </div>
         </form>

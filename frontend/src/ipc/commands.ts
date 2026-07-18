@@ -82,7 +82,18 @@ export interface AppSettings {
   theme: ThemeName;
   fontSize: FontSizeName;
   blink: boolean;
+  language: LanguageName;
 }
+
+export type LanguageName =
+  | "en"
+  | "tr"
+  | "id"
+  | "ja"
+  | "zh"
+  | "es"
+  | "de"
+  | "fr";
 
 export type ThemeName =
   | "dark"

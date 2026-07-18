@@ -4,6 +4,7 @@ export namespace main {
 	    theme: string;
 	    fontSize: string;
 	    blink: boolean;
+	    language: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new AppSettings(source);
@@ -14,6 +15,7 @@ export namespace main {
 	        this.theme = source["theme"];
 	        this.fontSize = source["fontSize"];
 	        this.blink = source["blink"];
+	        this.language = source["language"];
 	    }
 	}
 	export class StoredLayout {

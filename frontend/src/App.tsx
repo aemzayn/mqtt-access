@@ -42,7 +42,7 @@ export default function App() {
   }, []);
 
   if (!ready) {
-    return <div className={`app-loading ${Classes.DARK}`}>Loading…</div>;
+    return <div className={`app-loading ${Classes.DARK}`}>…</div>;
   }
 
   return (

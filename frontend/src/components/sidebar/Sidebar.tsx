@@ -10,6 +10,7 @@ import {
 import { ConnectionRow } from "./ConnectionRow";
 import { ConnectionFormDialog } from "./ConnectionFormDialog";
 import { SettingsDialog } from "../settings/SettingsDialog";
+import { useT } from "../../i18n";
 
 export function Sidebar() {
   const configs = useConnectionsStore((s) => s.configs);
@@ -20,6 +21,7 @@ export function Sidebar() {
   );
   const [editing, setEditing] = useState<ConnectionConfig | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const t = useT();
 
   const startAdd = () => setEditing(defaultConnectionConfig(nanoid(10)));
 
@@ -36,7 +38,7 @@ export function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <span className="sidebar-title">Connections</span>
+        <span className="sidebar-title">{t("connections")}</span>
         <span className="sidebar-header-actions">
           <Button
             size="small"
@@ -44,7 +46,7 @@ export function Sidebar() {
             icon="plus"
             onClick={startAdd}
             aria-label="Add connection"
-            title="Add connection"
+            title={t("addConnection")}
           />
           <Button
             size="small"
@@ -53,7 +55,7 @@ export function Sidebar() {
             disabled={!hasActive}
             onClick={() => useConnectionsStore.getState().disconnectAll()}
             aria-label="Disconnect all"
-            title="Disconnect all"
+            title={t("disconnectAll")}
           />
           <Button
             size="small"
@@ -61,7 +63,7 @@ export function Sidebar() {
             icon="cog"
             onClick={() => setSettingsOpen(true)}
             aria-label="Settings"
-            title="Settings"
+            title={t("settings")}
           />
         </span>
       </div>
@@ -69,9 +71,9 @@ export function Sidebar() {
       <div className="sidebar-list">
         {configs.length === 0 && (
           <div className="sidebar-empty">
-            No connections yet.
+            {t("noConnections")}
             <br />
-            Add one with the + button.
+            {t("addOneHint")}
           </div>
         )}
         {configs.map((config) => (

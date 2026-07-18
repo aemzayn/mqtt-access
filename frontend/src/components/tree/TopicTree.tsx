@@ -6,6 +6,7 @@ import { useSelectionStore } from "../../stores/selectionStore";
 import { getTreeSnapshot } from "../../ipc/commands";
 import { TreeRow, ROW_HEIGHT } from "./TreeRow";
 import { InputGroup } from "@blueprintjs/core";
+import { useT } from "../../i18n";
 
 export function TopicTree({ connectionId }: { connectionId: string }) {
   const version = useMirrorVersion(connectionId);
@@ -15,6 +16,7 @@ export function TopicTree({ connectionId }: { connectionId: string }) {
   const [filter, setFilter] = useState("");
   const selected = useSelectionStore((s) => s.selected[connectionId] ?? null);
   const parentRef = useRef<HTMLDivElement>(null);
+  const t = useT();
 
   useEffect(() => {
     getTreeSnapshot(connectionId)
@@ -60,13 +62,13 @@ export function TopicTree({ connectionId }: { connectionId: string }) {
         leftIcon="filter"
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
-        placeholder="Filter topics…"
+        placeholder={t("filterTopics")}
       />
 
       <div className="tree-scroll" ref={parentRef}>
         {rows.length === 0 && (
           <div className="tree-empty">
-            {filter ? "No topics match the filter." : "Waiting for messages…"}
+            {filter ? t("noTopicsMatch") : t("waitingMessages")}
           </div>
         )}
         <div

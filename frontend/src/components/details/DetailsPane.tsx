@@ -9,6 +9,7 @@ import { HistoryList } from "./HistoryList";
 import { ValueChart } from "./ValueChart";
 import { PublishForm } from "./PublishForm";
 import { parseNumeric } from "../../lib/json";
+import { useT } from "../../i18n";
 
 const HISTORY_FETCH = 200;
 const HISTORY_CAP = 1000;
@@ -16,6 +17,7 @@ const HISTORY_CAP = 1000;
 type Tab = "value" | "history" | "chart";
 
 export function DetailsPane({ connectionId }: { connectionId: string }) {
+  const t = useT();
   const topic = useSelectionStore(
     (s) => s.selected[connectionId] ?? null,
   );
@@ -28,7 +30,7 @@ export function DetailsPane({ connectionId }: { connectionId: string }) {
           topic={topic}
         />
       ) : (
-        <div className="details-empty">Select a topic to inspect it.</div>
+        <div className="details-empty">{t("selectTopic")}</div>
       )}
       <PublishForm connectionId={connectionId} initialTopic={topic ?? ""} />
     </div>
@@ -42,6 +44,7 @@ function TopicDetailsView({
   connectionId: string;
   topic: string;
 }) {
+  const t = useT();
   const [tab, setTab] = useState<Tab>("value");
   const [history, setHistory] = useState<MessageRecord[]>([]);
   const [msgCount, setMsgCount] = useState(0);
@@ -97,20 +100,20 @@ function TopicDetailsView({
     <div className="details-view">
       <div className="details-topic" title={topic}>
         {topic}
-        <span className="details-count">{msgCount} msgs</span>
+        <span className="details-count">{t("msgsSuffix", { n: msgCount })}</span>
       </div>
       <div className="details-tabs">
-        {(["value", "history", "chart"] as const).map((t) => (
+        {(["value", "history", "chart"] as const).map((tabId) => (
           <button
-            key={t}
-            className={`details-tab${tab === t ? " details-tab-active" : ""}`}
-            onClick={() => setTab(t)}
+            key={tabId}
+            className={`details-tab${tab === tabId ? " details-tab-active" : ""}`}
+            onClick={() => setTab(tabId)}
           >
-            {t === "value"
-              ? "Value"
-              : t === "history"
-                ? `History (${history.length})`
-                : "Chart"}
+            {tabId === "value"
+              ? t("tabValue")
+              : tabId === "history"
+                ? t("tabHistory", { n: history.length })
+                : t("tabChart")}
           </button>
         ))}
       </div>

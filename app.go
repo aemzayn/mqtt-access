@@ -23,6 +23,7 @@ type AppSettings struct {
 	Theme    string `json:"theme"`
 	FontSize string `json:"fontSize"`
 	Blink    bool   `json:"blink"`
+	Language string `json:"language"`
 }
 
 type App struct {
@@ -189,7 +190,7 @@ func (a *App) SaveLayout(data StoredLayout) error {
 }
 
 func (a *App) LoadSettings() (*AppSettings, error) {
-	settings := AppSettings{Theme: "dark", FontSize: "normal", Blink: true}
+	settings := AppSettings{Theme: "dark", FontSize: "normal", Blink: true, Language: "en"}
 	if err := storage.Load("settings.json", &settings); err != nil {
 		return nil, err
 	}

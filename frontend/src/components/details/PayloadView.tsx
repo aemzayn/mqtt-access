@@ -4,12 +4,14 @@ import type { MessageRecord } from "../../ipc/types";
 import { tryPrettyJson } from "../../lib/json";
 import { b64ByteLength } from "../../lib/b64";
 import { formatTimeMs } from "../../lib/time";
+import { useT } from "../../i18n";
 
 export function PayloadView({ message }: { message: MessageRecord | null }) {
+  const t = useT();
   const [raw, setRaw] = useState(false);
 
   if (!message) {
-    return <div className="details-empty">No message received yet.</div>;
+    return <div className="details-empty">{t("noMessageYet")}</div>;
   }
 
   if (message.payloadUtf8 == null) {
@@ -17,7 +19,7 @@ export function PayloadView({ message }: { message: MessageRecord | null }) {
       <div className="payload-view">
         <PayloadMeta message={message} />
         <div className="payload-binary">
-          Binary payload, {b64ByteLength(message.payloadB64)} bytes
+          {t("binaryPayload", { n: b64ByteLength(message.payloadB64) })}
         </div>
       </div>
     );
@@ -35,7 +37,7 @@ export function PayloadView({ message }: { message: MessageRecord | null }) {
           checked={raw}
           onChange={(e) => setRaw(e.target.checked)}
         >
-          Show raw
+          {t("showRaw")}
         </Checkbox>
       )}
       <pre className="payload-text">
@@ -46,11 +48,12 @@ export function PayloadView({ message }: { message: MessageRecord | null }) {
 }
 
 export function PayloadMeta({ message }: { message: MessageRecord }) {
+  const t = useT();
   return (
     <div className="payload-meta">
       {formatTimeMs(message.tsMs)} · QoS {message.qos}
-      {message.retain ? " · retained" : ""} · {b64ByteLength(message.payloadB64)}{" "}
-      B
+      {message.retain ? ` · ${t("retainedWord")}` : ""} ·{" "}
+      {b64ByteLength(message.payloadB64)} B
     </div>
   );
 }

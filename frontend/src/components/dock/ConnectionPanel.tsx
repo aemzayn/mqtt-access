@@ -10,6 +10,7 @@ import {
 } from "../../stores/treeMirror";
 import { clearConnectionData } from "../../ipc/commands";
 import { TopicTree } from "../tree/TopicTree";
+import { useT } from "../../i18n";
 import { DetailsPane } from "../details/DetailsPane";
 
 export function ConnectionPanel({
@@ -19,6 +20,7 @@ export function ConnectionPanel({
   connectionId: string;
   panelApi: DockviewPanelApi;
 }) {
+  const t = useT();
   useMirrorVersion(connectionId); // keeps header stats live
   const status =
     useConnectionsStore((s) => s.statuses[connectionId]) ?? "disconnected";
@@ -64,26 +66,29 @@ export function ConnectionPanel({
           {config?.name ?? connectionId}
         </span>
         <span className="conn-panel-stats">
-          {mirror.totalTopics} topics · {mirror.totalMessages} msgs ·{" "}
-          {mirror.messageRate.toFixed(mirror.messageRate < 10 ? 1 : 0)} msg/s
+          {t("stats", {
+            topics: mirror.totalTopics,
+            msgs: mirror.totalMessages,
+            rate: mirror.messageRate.toFixed(mirror.messageRate < 10 ? 1 : 0),
+          })}
         </span>
         <span className="conn-panel-actions">
-          <Button size="small" onClick={clearData} title="Clear collected data">
-            Clear
+          <Button size="small" onClick={clearData} title={t("clearData")}>
+            {t("clear")}
           </Button>
           <Button
             size="small"
             icon="maximize"
             onClick={() => panelApi.maximize()}
             aria-label="Maximize panel"
-            title="Maximize panel"
+            title={t("maximizePanel")}
           />
           <Button
             size="small"
             icon="minus"
             onClick={() => useLayoutStore.getState().minimize(connectionId)}
             aria-label="Minimize to strip"
-            title="Minimize to strip"
+            title={t("minimizePanel")}
           />
         </span>
       </div>

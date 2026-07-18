@@ -4,19 +4,21 @@ import type { MessageRecord } from "../../ipc/types";
 import { tryPrettyJson } from "../../lib/json";
 import { b64ByteLength } from "../../lib/b64";
 import { formatTimeMs } from "../../lib/time";
+import { useT, type Translate } from "../../i18n";
 
-function displayText(message: MessageRecord): string {
+function displayText(message: MessageRecord, t: Translate): string {
   if (message.payloadUtf8 == null) {
-    return `(binary, ${b64ByteLength(message.payloadB64)} bytes)`;
+    return t("binaryShort", { n: b64ByteLength(message.payloadB64) });
   }
   return tryPrettyJson(message.payloadUtf8) ?? message.payloadUtf8;
 }
 
 export function HistoryList({ history }: { history: MessageRecord[] }) {
+  const t = useT();
   const [openSeq, setOpenSeq] = useState<number | null>(null);
 
   if (history.length === 0) {
-    return <div className="details-empty">No history yet.</div>;
+    return <div className="details-empty">{t("noHistory")}</div>;
   }
 
   return (
@@ -33,7 +35,7 @@ export function HistoryList({ history }: { history: MessageRecord[] }) {
               <span className="history-arrow">{open ? "▾" : "▸"}</span>
               <span className="history-ts">{formatTimeMs(message.tsMs)}</span>
               <span className="history-preview">
-                {(message.payloadUtf8 ?? "(binary)").slice(0, 80)}
+                {(message.payloadUtf8 ?? t("binaryWord")).slice(0, 80)}
               </span>
               <span className="history-meta">
                 QoS {message.qos}
@@ -46,11 +48,11 @@ export function HistoryList({ history }: { history: MessageRecord[] }) {
                 message.payloadUtf8 != null &&
                 previous.payloadUtf8 != null ? (
                   <DiffView
-                    oldText={displayText(previous)}
-                    newText={displayText(message)}
+                    oldText={displayText(previous, t)}
+                    newText={displayText(message, t)}
                   />
                 ) : (
-                  <pre className="payload-text">{displayText(message)}</pre>
+                  <pre className="payload-text">{displayText(message, t)}</pre>
                 )}
               </div>
             )}
@@ -62,10 +64,11 @@ export function HistoryList({ history }: { history: MessageRecord[] }) {
 }
 
 function DiffView({ oldText, newText }: { oldText: string; newText: string }) {
+  const t = useT();
   if (oldText === newText) {
     return (
       <>
-        <div className="diff-note">Identical to previous message.</div>
+        <div className="diff-note">{t("identicalPrevious")}</div>
         <pre className="payload-text">{newText}</pre>
       </>
     );

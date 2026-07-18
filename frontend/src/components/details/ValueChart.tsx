@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import uPlot from "uplot";
 import "uplot/dist/uPlot.min.css";
+import { useT } from "../../i18n";
 
 export interface ChartPoint {
   ts: number;
@@ -10,6 +11,7 @@ export interface ChartPoint {
 const MAX_POINTS = 10_000;
 
 export function ValueChart({ points }: { points: ChartPoint[] }) {
+  const t = useT();
   const containerRef = useRef<HTMLDivElement>(null);
   const plotRef = useRef<uPlot | null>(null);
 
@@ -70,7 +72,7 @@ export function ValueChart({ points }: { points: ChartPoint[] }) {
       <div className="value-chart" ref={containerRef} />
       {points.length === 0 && (
         <div className="details-empty value-chart-empty">
-          No numeric values on this topic yet.
+          {t("noNumericValues")}
         </div>
       )}
     </div>

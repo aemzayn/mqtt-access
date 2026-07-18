@@ -15,6 +15,7 @@ import "dockview-react/dist/styles/dockview.css";
 import { useLayoutStore } from "../../stores/layoutStore";
 import { useConnectionsStore } from "../../stores/connectionsStore";
 import { useSettingsStore } from "../../stores/settingsStore";
+import { useT } from "../../i18n";
 import type { ThemeName } from "../../ipc/commands";
 import { ConnectionPanel } from "./ConnectionPanel";
 import { setDockApi } from "./dockApi";
@@ -62,6 +63,7 @@ export function DockArea() {
   const minimized = useLayoutStore((s) => s.minimized);
   const configs = useConnectionsStore((s) => s.configs);
   const theme = useSettingsStore((s) => s.theme);
+  const t = useT();
 
   const onReady = (event: DockviewReadyEvent) => {
     apiRef.current = event.api;
@@ -130,9 +132,7 @@ export function DockArea() {
         dndStrategy="pointer"
       />
       {openPanels.length === 0 && (
-        <div className="dock-empty">
-          Connect to a broker to open its topic tree here.
-        </div>
+        <div className="dock-empty">{t("dockEmpty")}</div>
       )}
     </div>
   );

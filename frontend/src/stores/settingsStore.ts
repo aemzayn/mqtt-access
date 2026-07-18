@@ -3,25 +3,14 @@ import {
   loadSettings,
   saveSettings,
   type AppSettings,
-  type FontSizeName,
-  type ThemeName,
 } from "../ipc/commands";
 
-export const THEMES: { value: ThemeName; label: string }[] = [
-  { value: "dark", label: "Dark" },
-  { value: "light", label: "Light" },
-  { value: "dracula", label: "Dracula" },
-  { value: "dark-contrast", label: "Dark high contrast" },
-  { value: "light-contrast", label: "White high contrast" },
-];
-
-export const FONT_SIZES: { value: FontSizeName; label: string }[] = [
-  { value: "small", label: "Small" },
-  { value: "normal", label: "Normal" },
-  { value: "big", label: "Big" },
-];
-
-const DEFAULTS: AppSettings = { theme: "dark", fontSize: "normal", blink: true };
+const DEFAULTS: AppSettings = {
+  theme: "dark",
+  fontSize: "normal",
+  blink: true,
+  language: "en",
+};
 
 // Themes/font-size/blink are driven by classes on <html> so Blueprint portals
 // (dialogs, tooltips) and the app root all pick up the same CSS variables.
@@ -58,8 +47,8 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
 
   update: (patch) => {
     set(patch);
-    const { theme, fontSize, blink } = get();
-    applyToDom({ theme, fontSize, blink });
-    saveSettings({ theme, fontSize, blink }).catch(() => {});
+    const { theme, fontSize, blink, language } = get();
+    applyToDom({ theme, fontSize, blink, language });
+    saveSettings({ theme, fontSize, blink, language }).catch(() => {});
   },
 }));

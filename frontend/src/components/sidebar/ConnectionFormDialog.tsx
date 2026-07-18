@@ -11,6 +11,7 @@ import {
   InputGroup,
 } from "@blueprintjs/core";
 import { openFilePicker } from "../../ipc/commands";
+import { useT } from "../../i18n";
 import type {
   ConnectionConfig,
   Protocol,
@@ -40,6 +41,7 @@ export function ConnectionFormDialog({
   onSave: (config: ConnectionConfig) => void;
   onCancel: () => void;
 }) {
+  const t = useT();
   const [config, setConfig] = useState<ConnectionConfig>({
     ...initial,
     clientId: initial.clientId ?? generateRandomClientId(),
@@ -94,25 +96,25 @@ export function ConnectionFormDialog({
   return (
     <Dialog
       isOpen
-      title={isNew ? "Add connection" : "Edit connection"}
+      title={isNew ? t("addConnection") : t("editConnection")}
       onClose={onCancel}
       className={Classes.DARK}
     >
       <form onSubmit={submit}>
         <DialogBody>
           <div className="form-grid">
-            <FormGroup label="Name" labelFor="conn-name">
+            <FormGroup label={t("name")} labelFor="conn-name">
               <InputGroup
                 id="conn-name"
                 value={config.name}
                 onChange={(e) => patch({ name: e.target.value })}
-                placeholder="My broker"
+                placeholder={t("namePlaceholder")}
                 autoFocus
               />
             </FormGroup>
 
             <div className="form-row">
-              <FormGroup label="Protocol" className="form-narrow">
+              <FormGroup label={t("protocol")} className="form-narrow">
                 <HTMLSelect
                   fill
                   value={config.protocol}
@@ -125,7 +127,7 @@ export function ConnectionFormDialog({
                   ]}
                 />
               </FormGroup>
-              <FormGroup label="Host" labelFor="conn-host" className="form-grow">
+              <FormGroup label={t("host")} labelFor="conn-host" className="form-grow">
                 <InputGroup
                   id="conn-host"
                   required
@@ -134,7 +136,7 @@ export function ConnectionFormDialog({
                   placeholder="broker.example.com"
                 />
               </FormGroup>
-              <FormGroup label="Port" labelFor="conn-port" className="form-narrow">
+              <FormGroup label={t("port")} labelFor="conn-port" className="form-narrow">
                 <InputGroup
                   id="conn-port"
                   type="number"
@@ -147,7 +149,7 @@ export function ConnectionFormDialog({
             </div>
 
             {isWs && (
-              <FormGroup label="WebSocket path" labelFor="conn-ws-path">
+              <FormGroup label={t("wsPath")} labelFor="conn-ws-path">
                 <InputGroup
                   id="conn-ws-path"
                   value={config.wsPath ?? ""}
@@ -159,7 +161,7 @@ export function ConnectionFormDialog({
 
             <div className="form-row">
               <FormGroup
-                label="Username"
+                label={t("username")}
                 labelFor="conn-username"
                 className="form-grow"
               >
@@ -171,7 +173,7 @@ export function ConnectionFormDialog({
                 />
               </FormGroup>
               <FormGroup
-                label="Password"
+                label={t("password")}
                 labelFor="conn-password"
                 className="form-grow"
               >
@@ -187,8 +189,8 @@ export function ConnectionFormDialog({
 
             <div className="form-row">
               <FormGroup
-                label="Client ID"
-                labelInfo="(blank = random)"
+                label={t("clientId")}
+                labelInfo={t("blankRandom")}
                 labelFor="conn-client-id"
                 className="form-grow"
               >
@@ -199,7 +201,7 @@ export function ConnectionFormDialog({
                 />
               </FormGroup>
               <FormGroup
-                label="Keepalive (s)"
+                label={t("keepalive")}
                 labelFor="conn-keepalive"
                 className="form-narrow"
               >
@@ -214,7 +216,7 @@ export function ConnectionFormDialog({
                 />
               </FormGroup>
               <FormGroup
-                label="History/topic"
+                label={t("historyPerTopic")}
                 labelFor="conn-history"
                 className="form-narrow"
               >
@@ -232,7 +234,7 @@ export function ConnectionFormDialog({
             </div>
 
             <fieldset className="form-subs">
-              <legend>Subscriptions</legend>
+              <legend>{t("subscriptions")}</legend>
               {config.subscriptions.map((sub, i) => (
                 <div className="form-row" key={i}>
                   <InputGroup
@@ -258,6 +260,7 @@ export function ConnectionFormDialog({
                     size="small"
                     icon="cross"
                     aria-label="Remove subscription"
+                    title={t("removeSubscription")}
                     onClick={() =>
                       patch({
                         subscriptions: config.subscriptions.filter(
@@ -281,15 +284,15 @@ export function ConnectionFormDialog({
                   })
                 }
               >
-                Add subscription
+                {t("addSubscription")}
               </Button>
             </fieldset>
 
             {isTls && (
               <fieldset className="form-subs">
-                <legend>TLS</legend>
+                <legend>{t("tls")}</legend>
                 <FilePickerRow
-                  label="CA certificate"
+                  label={t("caCert")}
                   value={config.tls?.caCertPath ?? null}
                   onPick={() => pickFile("caCertPath")}
                   onClear={() =>
@@ -303,7 +306,7 @@ export function ConnectionFormDialog({
                   }
                 />
                 <FilePickerRow
-                  label="Client certificate"
+                  label={t("clientCert")}
                   value={config.tls?.clientCertPath ?? null}
                   onPick={() => pickFile("clientCertPath")}
                   onClear={() =>
@@ -317,7 +320,7 @@ export function ConnectionFormDialog({
                   }
                 />
                 <FilePickerRow
-                  label="Client key"
+                  label={t("clientKey")}
                   value={config.tls?.clientKeyPath ?? null}
                   onPick={() => pickFile("clientKeyPath")}
                   onClear={() =>
@@ -341,7 +344,7 @@ export function ConnectionFormDialog({
                     })
                   }
                 >
-                  Allow invalid / self-signed certificates
+                  {t("allowInvalidCerts")}
                 </Checkbox>
               </fieldset>
             )}
@@ -350,16 +353,16 @@ export function ConnectionFormDialog({
               checked={config.connectOnStartup}
               onChange={(e) => patch({ connectOnStartup: e.target.checked })}
             >
-              Connect on startup
+              {t("connectOnStartup")}
             </Checkbox>
           </div>
         </DialogBody>
         <DialogFooter
           actions={
             <>
-              <Button onClick={onCancel}>Cancel</Button>
+              <Button onClick={onCancel}>{t("cancel")}</Button>
               <Button type="submit" intent="primary">
-                Save
+                {t("save")}
               </Button>
             </>
           }
@@ -380,20 +383,22 @@ function FilePickerRow({
   onPick: () => void;
   onClear: () => void;
 }) {
+  const t = useT();
   return (
     <div className="form-row form-file">
       <span className="form-file-label">{label}</span>
       <span className="form-file-value" title={value ?? undefined}>
-        {value ? value.split(/[\\/]/).pop() : "(none)"}
+        {value ? value.split(/[\\/]/).pop() : t("none")}
       </span>
       <Button size="small" onClick={onPick}>
-        Browse…
+        {t("browse")}
       </Button>
       {value && (
         <Button
           size="small"
           icon="cross"
           aria-label="Clear file"
+          title={t("clearFile")}
           onClick={onClear}
         />
       )}
