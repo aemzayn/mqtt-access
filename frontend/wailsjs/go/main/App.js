@@ -42,6 +42,10 @@ export function LoadSettings() {
   return window['go']['main']['App']['LoadSettings']();
 }
 
+export function LoadTrends() {
+  return window['go']['main']['App']['LoadTrends']();
+}
+
 export function OpenFilePicker() {
   return window['go']['main']['App']['OpenFilePicker']();
 }
@@ -62,6 +66,14 @@ export function SaveSettings(arg1) {
   return window['go']['main']['App']['SaveSettings'](arg1);
 }
 
+export function SaveTextFile(arg1, arg2) {
+  return window['go']['main']['App']['SaveTextFile'](arg1, arg2);
+}
+
+export function SaveTrends(arg1) {
+  return window['go']['main']['App']['SaveTrends'](arg1);
+}
+
 export function TestConnection(arg1) {
   return window['go']['main']['App']['TestConnection'](arg1);
 }
@@ -70,6 +82,14 @@ export function UnwatchTopic(arg1) {
   return window['go']['main']['App']['UnwatchTopic'](arg1);
 }
 
+export function UnwatchTrendTopic(arg1, arg2) {
+  return window['go']['main']['App']['UnwatchTrendTopic'](arg1, arg2);
+}
+
 export function WatchTopic(arg1, arg2) {
   return window['go']['main']['App']['WatchTopic'](arg1, arg2);
+}
+
+export function WatchTrendTopic(arg1, arg2) {
+  return window['go']['main']['App']['WatchTrendTopic'](arg1, arg2);
 }

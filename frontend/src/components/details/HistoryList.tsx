@@ -5,6 +5,8 @@ import { tryPrettyJson } from "../../lib/json"
 import { b64ByteLength } from "../../lib/b64"
 import { formatTimeMs } from "../../lib/time"
 import { useT, type Translate } from "../../i18n"
+import { CopyButton } from "../ui/CopyButton"
+import { SyntaxText } from "../ui/SyntaxText"
 
 function displayText(message: MessageRecord, t: Translate): string {
   if (message.payloadUtf8 == null) {
@@ -41,6 +43,10 @@ export function HistoryList({ history }: { history: MessageRecord[] }) {
                 QoS {message.qos}
                 {message.retain ? " R" : ""}
               </span>
+              <CopyButton
+                getText={() => displayText(message, t)}
+                title={t("copyPayload")}
+              />
             </div>
             {open && (
               <div className="history-entry-body">
@@ -52,7 +58,9 @@ export function HistoryList({ history }: { history: MessageRecord[] }) {
                     newText={displayText(message, t)}
                   />
                 ) : (
-                  <pre className="payload-text">{displayText(message, t)}</pre>
+                  <pre className="payload-text">
+                    <SyntaxText text={displayText(message, t)} />
+                  </pre>
                 )}
               </div>
             )}
@@ -69,7 +77,9 @@ function DiffView({ oldText, newText }: { oldText: string; newText: string }) {
     return (
       <>
         <div className="diff-note">{t("identicalPrevious")}</div>
-        <pre className="payload-text">{newText}</pre>
+        <pre className="payload-text">
+          <SyntaxText text={newText} />
+        </pre>
       </>
     )
   }
@@ -87,7 +97,7 @@ function DiffView({ oldText, newText }: { oldText: string; newText: string }) {
                 : undefined
           }
         >
-          {part.value}
+          <SyntaxText text={part.value} />
         </span>
       ))}
     </pre>

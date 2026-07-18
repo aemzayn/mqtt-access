@@ -9,11 +9,25 @@ export interface ChartPoint {
 }
 
 const MAX_POINTS = 10_000
+const DEFAULT_COLOR = "#4fc3f7"
 
-export function ValueChart({ points }: { points: ChartPoint[] }) {
+function toSeriesData(points: ChartPoint[]): [number[], number[]] {
+  const windowed = points.slice(-MAX_POINTS)
+  return [windowed.map(p => p.ts / 1000), windowed.map(p => p.value)]
+}
+
+export function ValueChart({
+  points,
+  color,
+}: {
+  points: ChartPoint[]
+  color?: string
+}) {
   const t = useT()
   const containerRef = useRef<HTMLDivElement>(null)
   const plotRef = useRef<uPlot | null>(null)
+  const pointsRef = useRef(points)
+  pointsRef.current = points
 
   useEffect(() => {
     const container = containerRef.current
@@ -32,7 +46,7 @@ export function ValueChart({ points }: { points: ChartPoint[] }) {
           {},
           {
             label: "value",
-            stroke: "#4fc3f7",
+            stroke: color ?? DEFAULT_COLOR,
             width: 1.5,
             points: { show: false },
           },
@@ -40,7 +54,7 @@ export function ValueChart({ points }: { points: ChartPoint[] }) {
         legend: { show: false },
         cursor: { y: false },
       },
-      [[], []],
+      toSeriesData(pointsRef.current),
       container,
     )
     plotRef.current = plot
@@ -58,13 +72,12 @@ export function ValueChart({ points }: { points: ChartPoint[] }) {
       plot.destroy()
       plotRef.current = null
     }
-  }, [])
+    // uPlot has no runtime "change series color" API, so a color change
+    // recreates the plot — re-seeded from pointsRef so it doesn't flash empty.
+  }, [color])
 
   useEffect(() => {
-    const windowed = points.slice(-MAX_POINTS)
-    const xs = windowed.map(p => p.ts / 1000)
-    const ys = windowed.map(p => p.value)
-    plotRef.current?.setData([xs, ys])
+    plotRef.current?.setData(toSeriesData(points))
   }, [points])
 
   return (

@@ -16,6 +16,9 @@ type ConnectionHandle struct {
 
 	watchedMu    sync.Mutex
 	watchedTopic string
+	// trendWatched holds topics pinned to a trend chart, which need live
+	// mqtt:message events regardless of which topic is selected in the tree.
+	trendWatched map[string]struct{}
 }
 
 func (h *ConnectionHandle) IsActive() bool {
@@ -37,6 +40,28 @@ func (h *ConnectionHandle) GetWatched() string {
 	h.watchedMu.Lock()
 	defer h.watchedMu.Unlock()
 	return h.watchedTopic
+}
+
+func (h *ConnectionHandle) AddTrendWatch(topic string) {
+	h.watchedMu.Lock()
+	if h.trendWatched == nil {
+		h.trendWatched = make(map[string]struct{})
+	}
+	h.trendWatched[topic] = struct{}{}
+	h.watchedMu.Unlock()
+}
+
+func (h *ConnectionHandle) RemoveTrendWatch(topic string) {
+	h.watchedMu.Lock()
+	delete(h.trendWatched, topic)
+	h.watchedMu.Unlock()
+}
+
+func (h *ConnectionHandle) IsTrendWatched(topic string) bool {
+	h.watchedMu.Lock()
+	defer h.watchedMu.Unlock()
+	_, ok := h.trendWatched[topic]
+	return ok
 }
 
 func (h *ConnectionHandle) Stop() {

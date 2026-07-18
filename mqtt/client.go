@@ -113,7 +113,7 @@ func NewConnection(wailsCtx context.Context, config ConnectionConfig, store *Top
 			msgHandler := func(_ pahomqtt.Client, msg pahomqtt.Message) {
 				record := store.Ingest(msg.Topic(), msg.Payload(), msg.Qos(), msg.Retained())
 				dirty.Mark(msg.Topic())
-				if handle.GetWatched() == msg.Topic() {
+				if handle.GetWatched() == msg.Topic() || handle.IsTrendWatched(msg.Topic()) {
 					runtime.EventsEmit(wailsCtx, EventMessage, MessageEvent{
 						ConnectionID: config.ID,
 						Topic:        msg.Topic(),

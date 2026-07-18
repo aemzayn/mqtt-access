@@ -6,16 +6,14 @@ import { getTopicDetails, getTopicHistory } from "../../ipc/commands"
 import type { MessageRecord } from "../../ipc/types"
 import { PayloadView } from "./PayloadView"
 import { HistoryList } from "./HistoryList"
-import { ValueChart } from "./ValueChart"
 import { PublishForm } from "./PublishForm"
-import { parseNumeric } from "../../lib/json"
 import { useT } from "../../i18n"
 import { CopyButton } from "../ui/CopyButton"
 
 const HISTORY_FETCH = 200
 const HISTORY_CAP = 1000
 
-type Tab = "value" | "history" | "chart"
+type Tab = "value" | "history"
 
 export function DetailsPane({ connectionId }: { connectionId: string }) {
   const t = useT()
@@ -90,10 +88,7 @@ function TopicDetailsView({
   }, [connectionId, topic, connected])
 
   const latest = history[0] ?? null
-  const chartPoints = [...history]
-    .reverse()
-    .map(m => ({ ts: m.tsMs, value: parseNumeric(m.payloadUtf8) }))
-    .filter((p): p is { ts: number; value: number } => p.value !== null)
+  const previous = history[1] ?? null
 
   return (
     <div className="details-view">
@@ -107,24 +102,26 @@ function TopicDetailsView({
         <CopyButton getText={() => topic} title={t("copyTopic")} />
       </div>
       <div className="details-tabs">
-        {(["value", "history", "chart"] as const).map(tabId => (
+        {(["value", "history"] as const).map(tabId => (
           <button
             key={tabId}
             className={`details-tab${tab === tabId ? " details-tab-active" : ""}`}
             onClick={() => setTab(tabId)}
           >
-            {tabId === "value"
-              ? t("tabValue")
-              : tabId === "history"
-                ? t("tabHistory", { n: history.length })
-                : t("tabChart")}
+            {tabId === "value" ? t("tabValue") : t("tabHistory", { n: history.length })}
           </button>
         ))}
       </div>
       <div className="details-content">
-        {tab === "value" && <PayloadView message={latest} />}
+        {tab === "value" && (
+          <PayloadView
+            message={latest}
+            previous={previous}
+            connectionId={connectionId}
+            topic={topic}
+          />
+        )}
         {tab === "history" && <HistoryList history={history} />}
-        {tab === "chart" && <ValueChart points={chartPoints} />}
       </div>
     </div>
   )

@@ -58,6 +58,28 @@ export namespace main {
 	        this.openPanels = source["openPanels"];
 	    }
 	}
+	export class Trend {
+	    id: string;
+	    connectionId: string;
+	    topic: string;
+	    path?: string;
+	    width: string;
+	    color?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Trend(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.connectionId = source["connectionId"];
+	        this.topic = source["topic"];
+	        this.path = source["path"];
+	        this.width = source["width"];
+	        this.color = source["color"];
+	    }
+	}
 
 }
 

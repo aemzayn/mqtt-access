@@ -32,6 +32,12 @@
   --flash: rgba(0, 122, 204, 0.32);
   --scrollbar: rgba(121, 121, 121, 0.4);
   --scrollbar-hover: rgba(121, 121, 121, 0.6);
+  --syn-key: #9cdcfe;
+  --syn-string: #ce9178;
+  --syn-number: #b5cea8;
+  --syn-bool: #569cd6;
+  --syn-null: #569cd6;
+  --syn-punct: var(--text-dim);
   --font-ui:
     "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
     system-ui, sans-serif;
@@ -69,6 +75,12 @@ html.theme-light {
   --flash: rgba(0, 122, 204, 0.16);
   --scrollbar: rgba(100, 100, 100, 0.35);
   --scrollbar-hover: rgba(100, 100, 100, 0.55);
+  --syn-key: #001080;
+  --syn-string: #a31515;
+  --syn-number: #098658;
+  --syn-bool: #0000ff;
+  --syn-null: #0000ff;
+  --syn-punct: var(--text-dim);
 }
 
 html.theme-dracula {
@@ -95,6 +107,12 @@ html.theme-dracula {
   --red: #ff5555;
   --input-border: #191a21;
   --flash: rgba(189, 147, 249, 0.28);
+  --syn-key: #8be9fd;
+  --syn-string: #f1fa8c;
+  --syn-number: #bd93f9;
+  --syn-bool: #ff79c6;
+  --syn-null: #ff79c6;
+  --syn-punct: var(--text-dim);
 }
 
 html.theme-dark-contrast {
@@ -121,6 +139,12 @@ html.theme-dark-contrast {
   --red: #ff5252;
   --input-border: #6fc3df;
   --flash: rgba(243, 133, 24, 0.4);
+  --syn-key: #3794ff;
+  --syn-string: #f9f1a5;
+  --syn-number: #b5cea8;
+  --syn-bool: #569cd6;
+  --syn-null: #569cd6;
+  --syn-punct: var(--text-dim);
 }
 
 html.theme-light-contrast {
@@ -149,6 +173,12 @@ html.theme-light-contrast {
   --flash: rgba(0, 107, 189, 0.2);
   --scrollbar: rgba(60, 60, 60, 0.4);
   --scrollbar-hover: rgba(60, 60, 60, 0.6);
+  --syn-key: #0000ff;
+  --syn-string: #a31515;
+  --syn-number: #098658;
+  --syn-bool: #0000ff;
+  --syn-null: #0000ff;
+  --syn-punct: var(--text-dim);
 }
 
 /* ---------- font size ---------- */
@@ -217,6 +247,13 @@ body,
 .app-separator:hover,
 .app-separator[data-resizing] {
   background: var(--accent);
+}
+
+.app-separator-h {
+  width: auto;
+  height: 4px;
+  border-right: none;
+  border-top: 1px solid var(--border);
 }
 
 /* ---------- Blueprint dark skin (compact, VS Code-like) ---------- */
@@ -1182,23 +1219,84 @@ html.no-flash .tree-row-flash {
   margin-left: 8px;
 }
 
+.publish-resize-handle {
+  height: 4px;
+  cursor: row-resize;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.publish-resize-handle:hover {
+  background: var(--accent);
+}
+
 .publish-body {
   display: flex;
   flex-direction: column;
   gap: 6px;
   padding: 0 10px 10px;
+  overflow-y: auto;
+  flex-shrink: 0;
 }
 
 .publish-body .bp6-input {
   width: 100%;
 }
 
-.publish-body textarea.bp6-input {
-  resize: vertical;
-  height: auto;
+.publish-editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.publish-editor {
+  position: relative;
+  flex: 1;
   min-height: 56px;
+}
+
+.publish-editor-highlight,
+.publish-editor-input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 4px 8px;
   font-family: var(--font-mono);
   font-size: calc(12px * var(--font-scale));
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow: auto;
+  border: 1px solid var(--input-border);
+  border-radius: 2px;
+}
+
+.publish-editor-highlight {
+  pointer-events: none;
+  background: var(--bg-input);
+  color: var(--text);
+}
+
+.publish-editor-input {
+  resize: none;
+  background: var(--bg-input);
+  color: var(--text);
+  outline: none;
+}
+
+.publish-editor-input:focus {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+  border-color: var(--accent);
+}
+
+.publish-editor-input-transparent {
+  background: transparent;
+  color: transparent;
+  caret-color: var(--text);
 }
 
 .publish-row {
@@ -1209,4 +1307,297 @@ html.no-flash .tree-row-flash {
 
 .publish-row .publish-submit {
   margin-left: auto;
+}
+
+/* ---------- syntax highlighting ---------- */
+
+.syn-key {
+  color: var(--syn-key);
+}
+
+.syn-string {
+  color: var(--syn-string);
+}
+
+.syn-number {
+  color: var(--syn-number);
+}
+
+.syn-bool {
+  color: var(--syn-bool);
+}
+
+.syn-null {
+  color: var(--syn-null);
+  font-style: italic;
+}
+
+.syn-punct {
+  color: var(--syn-punct);
+}
+
+/* ---------- payload type badge / controls ---------- */
+
+.payload-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.payload-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Blueprint's default "active" state is too close to the resting state to
+   read as selected — make Diff/Raw/Prettify/type toggles unambiguous.
+   !important: needed to outrank .bp6-button:not(.bp6-minimal):not(.bp6-intent-primary),
+   which is more specific (4 classes vs. 3) despite meaning "not active". */
+.bp6-dark .bp6-button.bp6-active,
+.bp6-dark .bp6-button.bp6-active:hover {
+  background: var(--accent) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  color: var(--button-text) !important;
+}
+
+.type-badge {
+  font-size: calc(10px * var(--font-scale));
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--badge);
+  color: var(--text-dim);
+}
+
+.type-badge-json {
+  background: var(--syn-key);
+  color: var(--bg);
+}
+
+.type-badge-number {
+  background: var(--syn-number);
+  color: var(--bg);
+}
+
+.type-badge-boolean {
+  background: var(--syn-bool);
+  color: var(--bg);
+}
+
+.type-badge-string {
+  background: var(--syn-string);
+  color: var(--bg);
+}
+
+.type-badge-binary {
+  background: var(--badge);
+  color: var(--text-dim);
+}
+
+/* ---------- structured JSON view ---------- */
+
+.json-view {
+  display: flex;
+  flex-direction: column;
+}
+
+.json-line {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: pre;
+  border-radius: 2px;
+}
+
+.json-line-changed {
+  background: var(--flash);
+}
+
+.json-add-trend {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-faint);
+  padding: 0 2px;
+  line-height: 1;
+}
+
+.json-add-trend:hover {
+  color: var(--accent);
+}
+
+/* ---------- trends panel ---------- */
+
+.trends-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-alt);
+  min-height: 0;
+}
+
+.trends-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 10px;
+  flex-shrink: 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.trends-header:hover {
+  background: var(--hover);
+}
+
+.trends-chevron {
+  display: flex;
+  align-items: center;
+  color: var(--text-dim);
+  transition: transform 0.12s ease;
+}
+
+.trends-title {
+  font-size: calc(11px * var(--font-scale));
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+}
+
+.trends-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  border-top: 1px solid var(--border);
+}
+
+.trends-empty {
+  padding: 18px;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.trends-empty-hint {
+  font-size: calc(12px * var(--font-scale));
+  margin-top: 4px;
+}
+
+.trends-cards {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 8px;
+  padding: 8px;
+  height: 100%;
+}
+
+.trend-card-slot {
+  display: flex;
+  min-width: 240px;
+}
+
+.trend-card-w33 {
+  flex: 0 0 calc(33.333% - 6px);
+}
+
+.trend-card-w50 {
+  flex: 0 0 calc(50% - 5px);
+}
+
+.trend-card-w100 {
+  flex: 0 0 100%;
+}
+
+.trend-card-wauto {
+  flex: 1 1 320px;
+}
+
+.trend-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: grab;
+}
+
+.trend-card-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.trend-card-label {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: calc(11px * var(--font-scale));
+  font-family: var(--font-mono);
+}
+
+.trend-card-topic {
+  color: var(--text);
+}
+
+.trend-card-path {
+  color: var(--syn-key);
+}
+
+.trend-card-conn {
+  color: var(--text-dim);
+}
+
+.trend-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.trend-width-select select {
+  font-size: calc(10px * var(--font-scale));
+  height: 20px;
+  min-height: 20px;
+  padding: 0 18px 0 4px;
+}
+
+.trend-color-input {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.trend-color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.trend-color-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 2px;
+}
+
+.trend-card-chart {
+  flex: 1;
+  min-height: 140px;
+  position: relative;
 }

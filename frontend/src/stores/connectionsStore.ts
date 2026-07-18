@@ -2,6 +2,7 @@ import { create } from "zustand"
 import * as commands from "../ipc/commands"
 import type { ConnectionConfig, ConnectionStatus } from "../ipc/types"
 import { useSelectionStore } from "./selectionStore"
+import { useTrendsStore } from "./trendsStore"
 import { showErrorToast } from "../lib/toaster"
 import { translate } from "../i18n"
 
@@ -71,12 +72,14 @@ export const useConnectionsStore = create<ConnectionsState>((set, get) => ({
       )
       throw e
     }
-    // Connecting replaces the backend handle, which loses the watched topic —
-    // re-issue it so the selected topic keeps getting live messages.
+    // Connecting replaces the backend handle, which loses all watches —
+    // re-issue the selected topic and every trend pinned to this connection
+    // so they keep getting live messages.
     const topic = useSelectionStore.getState().selected[id]
     if (topic) {
       commands.watchTopic(id, topic).catch(() => {})
     }
+    useTrendsStore.getState().rewatch(id)
   },
 
   disconnect: async id => {

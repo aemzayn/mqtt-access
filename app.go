@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"encoding/base64"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -40,6 +41,17 @@ type AppSettings struct {
 	FontSize string `json:"fontSize"`
 	Blink    bool   `json:"blink"`
 	Language string `json:"language"`
+}
+
+// Trend mirrors the frontend's TrendDef type. Path is nil when the whole
+// payload is the numeric value (not a field inside a JSON object).
+type Trend struct {
+	ID           string  `json:"id"`
+	ConnectionID string  `json:"connectionId"`
+	Topic        string  `json:"topic"`
+	Path         *string `json:"path"`
+	Width        string  `json:"width"`
+	Color        *string `json:"color"`
 }
 
 type App struct {
@@ -181,6 +193,27 @@ func (a *App) UnwatchTopic(connectionID string) error {
 	return nil
 }
 
+// WatchTrendTopic / UnwatchTrendTopic manage a separate watch set from the
+// tree-selection watch above, so a topic pinned to a trend chart keeps
+// receiving live mqtt:message events even while a different topic is selected.
+func (a *App) WatchTrendTopic(connectionID, topic string) error {
+	handle, err := a.getHandle(connectionID)
+	if err != nil {
+		return err
+	}
+	handle.AddTrendWatch(topic)
+	return nil
+}
+
+func (a *App) UnwatchTrendTopic(connectionID, topic string) error {
+	handle, err := a.getHandle(connectionID)
+	if err != nil {
+		return err
+	}
+	handle.RemoveTrendWatch(topic)
+	return nil
+}
+
 func (a *App) ClearConnectionData(connectionID string) error {
 	handle, err := a.getHandle(connectionID)
 	if err != nil {
@@ -231,6 +264,21 @@ func (a *App) SaveSettings(settings AppSettings) error {
 	return storage.Save("settings.json", settings)
 }
 
+func (a *App) LoadTrends() ([]Trend, error) {
+	var trends []Trend
+	if err := storage.Load("trends.json", &trends); err != nil {
+		return nil, err
+	}
+	if trends == nil {
+		trends = []Trend{}
+	}
+	return trends, nil
+}
+
+func (a *App) SaveTrends(trends []Trend) error {
+	return storage.Save("trends.json", trends)
+}
+
 func (a *App) GetAppInfo() AppInfo {
 	return AppInfo{
 		Name:           "MQTT Access",
@@ -249,6 +297,21 @@ func (a *App) OpenFilePicker() (string, error) {
 	return runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
 		Title: "Select file",
 	})
+}
+
+// SaveTextFile prompts for a destination and writes content there. Returns
+// an empty path (no error) if the user cancels the dialog.
+func (a *App) SaveTextFile(defaultFilename, content string) error {
+	path, err := runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
+		DefaultFilename: defaultFilename,
+	})
+	if err != nil {
+		return err
+	}
+	if path == "" {
+		return nil
+	}
+	return os.WriteFile(path, []byte(content), 0o600)
 }
 
 // ── helpers ───────────────────────────────────────────────────────────────────

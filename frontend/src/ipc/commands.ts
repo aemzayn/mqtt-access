@@ -63,6 +63,12 @@ export const watchTopic = (connectionId: string, topic: string) =>
 export const unwatchTopic = (connectionId: string) =>
   call<void>("UnwatchTopic", connectionId)
 
+export const watchTrendTopic = (connectionId: string, topic: string) =>
+  call<void>("WatchTrendTopic", connectionId, topic)
+
+export const unwatchTrendTopic = (connectionId: string, topic: string) =>
+  call<void>("UnwatchTrendTopic", connectionId, topic)
+
 export const clearConnectionData = (connectionId: string) =>
   call<void>("ClearConnectionData", connectionId)
 
@@ -107,3 +113,22 @@ export interface AppInfo {
 }
 
 export const getAppInfo = () => call<AppInfo>("GetAppInfo")
+
+export type TrendWidth = "33" | "50" | "100" | "auto"
+
+export interface TrendDef {
+  id: string
+  connectionId: string
+  topic: string
+  path: string | null
+  width: TrendWidth
+  color: string | null
+}
+
+export const loadTrends = () => call<TrendDef[]>("LoadTrends")
+
+export const saveTrends = (trends: TrendDef[]) =>
+  call<void>("SaveTrends", trends)
+
+export const saveTextFile = (defaultFilename: string, content: string) =>
+  call<void>("SaveTextFile", defaultFilename, content)

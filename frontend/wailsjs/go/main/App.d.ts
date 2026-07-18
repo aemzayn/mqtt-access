@@ -23,6 +23,8 @@ export function LoadLayout():Promise<main.StoredLayout>;
 
 export function LoadSettings():Promise<main.AppSettings>;
 
+export function LoadTrends():Promise<Array<main.Trend>>;
+
 export function OpenFilePicker():Promise<string>;
 
 export function Publish(arg1:string,arg2:string,arg3:string,arg4:number,arg5:boolean):Promise<void>;
@@ -33,8 +35,16 @@ export function SaveLayout(arg1:main.StoredLayout):Promise<void>;
 
 export function SaveSettings(arg1:main.AppSettings):Promise<void>;
 
+export function SaveTextFile(arg1:string,arg2:string):Promise<void>;
+
+export function SaveTrends(arg1:Array<main.Trend>):Promise<void>;
+
 export function TestConnection(arg1:mqtt.ConnectionConfig):Promise<void>;
 
 export function UnwatchTopic(arg1:string):Promise<void>;
 
+export function UnwatchTrendTopic(arg1:string,arg2:string):Promise<void>;
+
 export function WatchTopic(arg1:string,arg2:string):Promise<void>;
+
+export function WatchTrendTopic(arg1:string,arg2:string):Promise<void>;
