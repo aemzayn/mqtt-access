@@ -1,19 +1,66 @@
-# README
+# MQTT Access
 
-## About
+A cross-platform desktop MQTT explorer that connects to **multiple brokers
+simultaneously**, each in its own dockable panel. Inspired by MQTT Explorer.
 
-This is the official Wails React-TS template.
+Built with **Wails v2** (Go backend) + **React + TypeScript** (Vite frontend).
 
-You can configure the project by editing `wails.json`. More information about the project settings can be found
-here: https://wails.io/docs/reference/project-config
+## Features
 
-## Live Development
+- Multiple concurrent broker connections, each in a resizable / draggable /
+	minimizable dock panel (dockview).
+- Live hierarchical topic tree (virtualized) with per-topic latest-value
+	preview, message counts, and retained flags.
+- Per-topic details: raw + pretty-JSON payload, message history with
+	consecutive-payload diffs, and a live numeric value chart (uPlot).
+- Publish with QoS 0/1/2 and retain.
+- Transports: `mqtt`, `mqtts`, `ws`, `wss` — with username/password auth and
+	TLS options (CA cert, client cert/key, allow self-signed).
+- Connections and window layout persist locally; optional connect-on-startup.
+- Message data is kept in RAM only while relevant, with a bounded per-topic
+	history (default 1000 messages/topic).
 
-To run in live development mode, run `wails dev` in the project directory. This will run a Vite development
-server that will provide very fast hot reload of your frontend changes. If you want to develop in a browser
-and have access to your Go methods, there is also a dev server that runs on http://localhost:34115. Connect
-to this in your browser, and you can call your Go code from devtools.
+## Architecture
 
-## Building
+Go owns the MQTT connections and all message data. Each connection configures a
+Paho MQTT client and ingests incoming messages into a per-connection `TopicStore`
+(topic trie + bounded per-topic history). A 100 ms **batcher** coalesces dirty
+topics and emits one `mqtt:batch` Wails event (<=10 Hz) — cost is O(distinct
+topics touched), not O(messages), so high-volume brokers don't flood the bridge.
+The frontend keeps a lightweight off-React mirror tree for rendering and fetches
+full payloads/history on demand.
 
-To build a redistributable, production mode package, use `wails build`.
+Key files:
+- `mqtt/client.go` — connection setup, transports, reconnect behavior, TLS wiring
+- `mqtt/store.go` — topic trie + bounded history
+- `mqtt/batcher.go` — coalesced batch emission (`mqtt:batch`)
+- `app.go` — Wails-bound commands and event flow
+- `frontend/src/lib/topicMirror.ts` — off-React tree mirror + flatten (render-perf linchpin)
+- `frontend/src/components/dock/DockArea.tsx` — dockview panels, minimize strip, layout persistence
+
+## Develop
+
+```sh
+cd frontend && npm install
+cd ..
+wails dev            # launch the app (dev)
+wails build          # production bundle
+cd frontend && npm test   # frontend unit tests (vitest)
+go test ./...        # Go tests
+```
+
+## Testing with a broker
+
+Public brokers (`broker.emqx.io`, `test.mosquitto.org`) work, but note that
+their **bare `#` wildcard is often throttled/blocked** — subscribe to a specific
+prefix like `bench/#` when testing.
+
+For deterministic testing, run a local broker:
+
+```sh
+docker run -d --name mosq -p 18883:1883 -p 19001:9001 eclipse-mosquitto:2
+```
+
+Then add a connection to `localhost:18883` subscribed to `bench/#`, and publish
+sample traffic (for example with `mosquitto_pub`) to validate tree updates,
+history, and charts.
