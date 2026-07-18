@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Classes } from "@blueprintjs/core"
+import { Classes, FocusStyleManager } from "@blueprintjs/core"
 import { Group, Panel, Separator } from "react-resizable-panels"
 import { Sidebar } from "./components/sidebar/Sidebar"
 import { DockArea } from "./components/dock/DockArea"
@@ -8,6 +8,9 @@ import { initIpc } from "./ipc/wire"
 import { useConnectionsStore } from "./stores/connectionsStore"
 import { useLayoutStore } from "./stores/layoutStore"
 import { useSettingsStore } from "./stores/settingsStore"
+
+// Show focus rings for keyboard navigation only, not mouse clicks.
+FocusStyleManager.onlyShowFocusOnTabs()
 
 export default function App() {
   const [ready, setReady] = useState(false)

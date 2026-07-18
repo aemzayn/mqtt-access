@@ -93,6 +93,9 @@ const en = {
   binaryWord: "(binary)",
   noNumericValues: "No numeric values on this topic yet.",
   publish: "Publish",
+  copyTopic: "Copy topic",
+  connectFailed: "Failed to connect to \"{name}\"",
+  copyPayload: "Copy payload",
   published: "Published ✓",
   payload: "Payload",
   retain: "Retain",
@@ -180,6 +183,9 @@ const tr: Dict = {
   binaryWord: "(ikili)",
   noNumericValues: "Bu konuda henüz sayısal değer yok.",
   publish: "Yayınla",
+  copyTopic: "Konuyu kopyala",
+  connectFailed: "\"{name}\" bağlantısı kurulamadı",
+  copyPayload: "Veriyi kopyala",
   published: "Yayınlandı ✓",
   payload: "Veri",
   retain: "Kalıcı",
@@ -264,6 +270,9 @@ const id: Dict = {
   binaryWord: "(biner)",
   noNumericValues: "Belum ada nilai numerik pada topik ini.",
   publish: "Terbitkan",
+  copyTopic: "Salin topik",
+  connectFailed: "Gagal terhubung ke \"{name}\"",
+  copyPayload: "Salin muatan",
   published: "Diterbitkan ✓",
   payload: "Muatan",
   retain: "Retain",
@@ -348,6 +357,9 @@ const ja: Dict = {
   binaryWord: "（バイナリ）",
   noNumericValues: "このトピックには数値がまだありません。",
   publish: "パブリッシュ",
+  copyTopic: "トピックをコピー",
+  connectFailed: "「{name}」に接続できませんでした",
+  copyPayload: "ペイロードをコピー",
   published: "送信済み ✓",
   payload: "ペイロード",
   retain: "Retain",
@@ -432,6 +444,9 @@ const zh: Dict = {
   binaryWord: "（二进制）",
   noNumericValues: "此主题暂无数值。",
   publish: "发布",
+  copyTopic: "复制主题",
+  connectFailed: "无法连接到“{name}”",
+  copyPayload: "复制负载",
   published: "已发布 ✓",
   payload: "负载",
   retain: "保留",
@@ -516,6 +531,9 @@ const es: Dict = {
   binaryWord: "(binario)",
   noNumericValues: "Aún no hay valores numéricos en este tema.",
   publish: "Publicar",
+  copyTopic: "Copiar tema",
+  connectFailed: "No se pudo conectar a \"{name}\"",
+  copyPayload: "Copiar carga útil",
   published: "Publicado ✓",
   payload: "Carga útil",
   retain: "Retener",
@@ -600,6 +618,9 @@ const de: Dict = {
   binaryWord: "(binär)",
   noNumericValues: "Noch keine numerischen Werte in diesem Topic.",
   publish: "Veröffentlichen",
+  copyTopic: "Topic kopieren",
+  connectFailed: "Verbindung zu \"{name}\" fehlgeschlagen",
+  copyPayload: "Payload kopieren",
   published: "Veröffentlicht ✓",
   payload: "Payload",
   retain: "Retain",
@@ -684,6 +705,9 @@ const fr: Dict = {
   binaryWord: "(binaire)",
   noNumericValues: "Pas encore de valeurs numériques sur ce sujet.",
   publish: "Publier",
+  copyTopic: "Copier le sujet",
+  connectFailed: "Échec de la connexion à « {name} »",
+  copyPayload: "Copier la charge utile",
   published: "Publié ✓",
   payload: "Charge utile",
   retain: "Retenir",
@@ -710,4 +734,12 @@ function makeT(language: LanguageName): Translate {
 export function useT(): Translate {
   const language = useSettingsStore(s => s.language)
   return useMemo(() => makeT(language), [language])
+}
+
+// For non-React callers (stores, event wiring).
+export function translate(
+  key: MsgKey,
+  vars?: Record<string, string | number>,
+): string {
+  return makeT(useSettingsStore.getState().language)(key, vars)
 }

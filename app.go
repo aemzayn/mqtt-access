@@ -49,14 +49,18 @@ func (a *App) Connect(config mqttpkg.ConnectionConfig) error {
 		return fmt.Errorf("host must not be empty")
 	}
 
+	// Reuse the previous store (if any) so reconnecting keeps the topic tree;
+	// ClearConnectionData is the explicit way to wipe it.
 	a.state.mu.Lock()
+	var prevStore *mqttpkg.TopicStore
 	if prev, ok := a.state.connections[config.ID]; ok {
 		prev.Stop()
+		prevStore = prev.Store
 		delete(a.state.connections, config.ID)
 	}
 	a.state.mu.Unlock()
 
-	handle, err := mqttpkg.NewConnection(a.ctx, config)
+	handle, err := mqttpkg.NewConnection(a.ctx, config, prevStore)
 	if err != nil {
 		return err
 	}

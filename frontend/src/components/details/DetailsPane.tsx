@@ -10,6 +10,7 @@ import { ValueChart } from "./ValueChart"
 import { PublishForm } from "./PublishForm"
 import { parseNumeric } from "../../lib/json"
 import { useT } from "../../i18n"
+import { CopyButton } from "../ui/CopyButton"
 
 const HISTORY_FETCH = 200
 const HISTORY_CAP = 1000
@@ -97,10 +98,13 @@ function TopicDetailsView({
   return (
     <div className="details-view">
       <div className="details-topic" title={topic}>
-        {topic}
-        <span className="details-count">
-          {t("msgsSuffix", { n: msgCount })}
+        <span className="details-topic-text">
+          {topic}
+          <span className="details-count">
+            {t("msgsSuffix", { n: msgCount })}
+          </span>
         </span>
+        <CopyButton getText={() => topic} title={t("copyTopic")} />
       </div>
       <div className="details-tabs">
         {(["value", "history", "chart"] as const).map(tabId => (

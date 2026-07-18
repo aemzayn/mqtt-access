@@ -13,14 +13,20 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-func NewConnection(wailsCtx context.Context, config ConnectionConfig) (*ConnectionHandle, error) {
+// NewConnection spawns a client task. A non-nil store (from a previous handle
+// for the same connection) is reused so reconnecting keeps the topic tree.
+func NewConnection(wailsCtx context.Context, config ConnectionConfig, store *TopicStore) (*ConnectionHandle, error) {
 	tlsCfg, err := buildTLSConfig(config)
 	if err != nil {
 		return nil, fmt.Errorf("TLS config: %w", err)
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-	store := NewTopicStore(config.HistoryLimit)
+	if store == nil {
+		store = NewTopicStore(config.HistoryLimit)
+	} else {
+		store.SetHistoryLimit(config.HistoryLimit)
+	}
 	dirty := NewDirtySet()
 
 	handle := &ConnectionHandle{
@@ -43,8 +49,10 @@ func NewConnection(wailsCtx context.Context, config ConnectionConfig) (*Connecti
 	opts.SetKeepAlive(keepAlive)
 	opts.SetAutoReconnect(true)
 	opts.SetMaxReconnectInterval(30 * time.Second)
-	opts.SetConnectRetry(true)
-	opts.SetConnectRetryInterval(1 * time.Second)
+	// No retry loop on the initial connect: fail fast so the UI can tell the
+	// user the attempt failed. AutoReconnect still covers drops afterwards.
+	opts.SetConnectRetry(false)
+	opts.SetConnectTimeout(10 * time.Second)
 	opts.SetResumeSubs(false)
 
 	if tlsCfg != nil {
@@ -104,8 +112,22 @@ func NewConnection(wailsCtx context.Context, config ConnectionConfig) (*Connecti
 	})
 
 	client := pahomqtt.NewClient(opts)
-	client.Connect() //nolint:errcheck — OnConnect fires on success
+	token := client.Connect()
 	handle.Client = client
+
+	// Report an initial-connect failure as "disconnected + error" so the
+	// frontend can toast it instead of hanging in "connecting" forever.
+	go func() {
+		token.Wait()
+		if err := token.Error(); err != nil && handle.IsActive() {
+			errStr := err.Error()
+			runtime.EventsEmit(wailsCtx, EventStatus, StatusEvent{
+				ConnectionID: config.ID,
+				Status:       StatusDisconnected,
+				Error:        &errStr,
+			})
+		}
+	}()
 
 	SpawnBatcher(ctx, wailsCtx, config.ID, store, dirty)
 

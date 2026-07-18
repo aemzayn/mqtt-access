@@ -5,6 +5,7 @@ import { tryPrettyJson } from "../../lib/json"
 import { b64ByteLength } from "../../lib/b64"
 import { formatTimeMs } from "../../lib/time"
 import { useT } from "../../i18n"
+import { CopyButton } from "../ui/CopyButton"
 
 export function PayloadView({ message }: { message: MessageRecord | null }) {
   const t = useT()
@@ -17,7 +18,13 @@ export function PayloadView({ message }: { message: MessageRecord | null }) {
   if (message.payloadUtf8 == null) {
     return (
       <div className="payload-view">
-        <PayloadMeta message={message} />
+        <div className="payload-head">
+          <PayloadMeta message={message} />
+          <CopyButton
+            getText={() => message.payloadB64}
+            title={t("copyPayload")}
+          />
+        </div>
         <div className="payload-binary">
           {t("binaryPayload", { n: b64ByteLength(message.payloadB64) })}
         </div>
@@ -30,7 +37,15 @@ export function PayloadView({ message }: { message: MessageRecord | null }) {
 
   return (
     <div className="payload-view">
-      <PayloadMeta message={message} />
+      <div className="payload-head">
+        <PayloadMeta message={message} />
+        <CopyButton
+          getText={() =>
+            showPretty && pretty !== null ? pretty : (message.payloadUtf8 ?? "")
+          }
+          title={t("copyPayload")}
+        />
+      </div>
       {pretty !== null && (
         <Checkbox
           className="payload-toggle"

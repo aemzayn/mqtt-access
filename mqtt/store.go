@@ -42,6 +42,17 @@ func NewTopicStore(histLimit int) *TopicStore {
 	}
 }
 
+// SetHistoryLimit applies a (possibly changed) per-topic history limit when a
+// store is reused across reconnects.
+func (s *TopicStore) SetHistoryLimit(histLimit int) {
+	if histLimit < 1 {
+		histLimit = 1
+	}
+	s.mu.Lock()
+	s.histLimit = histLimit
+	s.mu.Unlock()
+}
+
 func (s *TopicStore) Totals() (uint64, uint32) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
