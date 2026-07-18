@@ -5,11 +5,11 @@
 	"info": {
 		"0000": {
 			"ProductVersion": "{{.Info.ProductVersion}}",
-			"CompanyName": "{{.Info.CompanyName}}",
-			"FileDescription": "{{.Info.ProductName}}",
-			"LegalCopyright": "{{.Info.Copyright}}",
-			"ProductName": "{{.Info.ProductName}}",
-			"Comments": "{{.Info.Comments}}"
+			"CompanyName": "Ahmad Muslih Zain",
+			"FileDescription": "Cross-platform desktop MQTT explorer",
+			"LegalCopyright": "Copyright © 2026 Ahmad Muslih Zain",
+			"ProductName": "MQTT Access",
+			"Comments": "Connect to multiple MQTT brokers simultaneously. https://github.com/aemzayn/mqtt-access"
 		}
 	}
 }
