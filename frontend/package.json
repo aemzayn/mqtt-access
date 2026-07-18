@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "mqtt-access-frontend",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -7,23 +7,21 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "format": "prettier --write src/**/*"
   },
+  "license": "MIT",
   "dependencies": {
     "@blueprintjs/core": "^6.17.2",
+    "@blueprintjs/icons": "^6.13.0",
     "@blueprintjs/select": "^6.3.3",
     "@fontsource-variable/inter": "^5.2.8",
     "@tanstack/react-virtual": "^3.14.5",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
     "diff": "^9.0.0",
     "dockview-react": "^7.0.2",
-    "framer-motion": "^12.42.2",
-    "lucide-react": "^1.24.0",
     "nanoid": "^5.1.16",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-mosaic-component": "^7.0.0",
     "react-resizable-panels": "^4.12.2",
     "uplot": "^1.6.32",
     "zustand": "^5.0.14"

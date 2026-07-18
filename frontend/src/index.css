@@ -7,23 +7,23 @@
   color-scheme: dark;
   --font-scale: 1;
   /* VS Code Dark+ palette (default / "dark" theme) */
-  --bg: #1e1e1e;            /* editor.background */
-  --bg-alt: #252526;        /* sideBar.background */
-  --bg-raised: #2d2d2d;     /* tab.inactiveBackground */
-  --bg-input: #3c3c3c;      /* input.background */
-  --border: #3c3c3c;        /* subtle divider */
+  --bg: #1e1e1e; /* editor.background */
+  --bg-alt: #252526; /* sideBar.background */
+  --bg-raised: #2d2d2d; /* tab.inactiveBackground */
+  --bg-input: #3c3c3c; /* input.background */
+  --border: #3c3c3c; /* subtle divider */
   --border-strong: #454545;
-  --text: #cccccc;          /* foreground */
-  --text-dim: #969696;      /* descriptionForeground */
+  --text: #cccccc; /* foreground */
+  --text-dim: #969696; /* descriptionForeground */
   --text-faint: #6e7681;
-  --accent: #007acc;        /* focusBorder / statusBar */
+  --accent: #007acc; /* focusBorder / statusBar */
   --accent-hover: #1177bb;
-  --button: #0e639c;        /* button.background */
+  --button: #0e639c; /* button.background */
   --button-hover: #1177bb;
-  --select: #094771;        /* list.activeSelectionBackground */
+  --select: #094771; /* list.activeSelectionBackground */
   --select-inactive: #37373d;
-  --hover: #2a2d2e;         /* list.hoverBackground */
-  --badge: #4d4d4d;         /* badge.background */
+  --hover: #2a2d2e; /* list.hoverBackground */
+  --badge: #4d4d4d; /* badge.background */
   --green: #4ec9b0;
   --amber: #cca700;
   --red: #f14c4c;
@@ -32,8 +32,11 @@
   --flash: rgba(0, 122, 204, 0.32);
   --scrollbar: rgba(121, 121, 121, 0.4);
   --scrollbar-hover: rgba(121, 121, 121, 0.6);
-  --font-ui: "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  --font-mono: "Cascadia Mono", "Cascadia Code", Consolas, "Courier New", monospace;
+  --font-ui:
+    "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    system-ui, sans-serif;
+  --font-mono:
+    "Cascadia Mono", "Cascadia Code", Consolas, "Courier New", monospace;
   font-family: var(--font-ui);
   font-size: calc(13px * var(--font-scale));
 }

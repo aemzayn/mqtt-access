@@ -1,13 +1,13 @@
-import { memo, useRef } from "react";
-import type { FlatRow } from "../../lib/topicMirror";
+import { memo, useRef } from "react"
+import type { FlatRow } from "../../lib/topicMirror"
 
-export const ROW_HEIGHT = 22;
+export const ROW_HEIGHT = 22
 
 interface TreeRowProps {
-  row: FlatRow;
-  selected: boolean;
-  onToggle: (path: string) => void;
-  onSelect: (path: string) => void;
+  row: FlatRow
+  selected: boolean
+  onToggle: (path: string) => void
+  onSelect: (path: string) => void
 }
 
 export const TreeRow = memo(
@@ -15,11 +15,11 @@ export const TreeRow = memo(
     // Blink on activity: bump a key whenever this subtree receives messages so
     // the row remounts and the flash animation restarts. Initialized to the
     // current count, so rows scrolled into view don't flash on mount.
-    const seenMsgCount = useRef(row.subtreeMsgCount);
-    const flashKey = useRef(0);
+    const seenMsgCount = useRef(row.subtreeMsgCount)
+    const flashKey = useRef(0)
     if (seenMsgCount.current !== row.subtreeMsgCount) {
-      seenMsgCount.current = row.subtreeMsgCount;
-      flashKey.current += 1;
+      seenMsgCount.current = row.subtreeMsgCount
+      flashKey.current += 1
     }
 
     return (
@@ -33,9 +33,9 @@ export const TreeRow = memo(
       >
         <span
           className={`tree-arrow${row.hasChildren ? "" : " tree-arrow-hidden"}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (row.hasChildren) onToggle(row.path);
+          onClick={e => {
+            e.stopPropagation()
+            if (row.hasChildren) onToggle(row.path)
           }}
         >
           {row.expanded ? "⌄" : "›"}
@@ -53,7 +53,7 @@ export const TreeRow = memo(
           <span className="tree-preview"> = {row.preview}</span>
         )}
       </div>
-    );
+    )
   },
   (prev, next) =>
     prev.selected === next.selected &&
@@ -66,4 +66,4 @@ export const TreeRow = memo(
     prev.row.subtreeTopicCount === next.row.subtreeTopicCount &&
     prev.row.subtreeMsgCount === next.row.subtreeMsgCount &&
     prev.row.retain === next.row.retain,
-);
+)

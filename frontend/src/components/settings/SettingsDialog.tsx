@@ -7,22 +7,18 @@ import {
   HTMLSelect,
   Radio,
   RadioGroup,
-} from "@blueprintjs/core";
-import { useSettingsStore } from "../../stores/settingsStore";
-import { LANGUAGES, useT } from "../../i18n";
-import type {
-  FontSizeName,
-  LanguageName,
-  ThemeName,
-} from "../../ipc/commands";
+} from "@blueprintjs/core"
+import { useSettingsStore } from "../../stores/settingsStore"
+import { LANGUAGES, useT } from "../../i18n"
+import type { FontSizeName, LanguageName, ThemeName } from "../../ipc/commands"
 
 export function SettingsDialog({ onClose }: { onClose: () => void }) {
-  const theme = useSettingsStore((s) => s.theme);
-  const fontSize = useSettingsStore((s) => s.fontSize);
-  const blink = useSettingsStore((s) => s.blink);
-  const language = useSettingsStore((s) => s.language);
-  const update = useSettingsStore((s) => s.update);
-  const t = useT();
+  const theme = useSettingsStore(s => s.theme)
+  const fontSize = useSettingsStore(s => s.fontSize)
+  const blink = useSettingsStore(s => s.blink)
+  const language = useSettingsStore(s => s.language)
+  const update = useSettingsStore(s => s.update)
+  const t = useT()
 
   const themeOptions: { value: ThemeName; label: string }[] = [
     { value: "dark", label: t("themeDark") },
@@ -30,13 +26,13 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
     { value: "dracula", label: t("themeDracula") },
     { value: "dark-contrast", label: t("themeDarkContrast") },
     { value: "light-contrast", label: t("themeLightContrast") },
-  ];
+  ]
 
   const fontOptions: { value: FontSizeName; label: string }[] = [
     { value: "small", label: t("fontSmall") },
     { value: "normal", label: t("fontNormal") },
     { value: "big", label: t("fontBig") },
-  ];
+  ]
 
   return (
     <Dialog
@@ -52,7 +48,7 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
               id="settings-theme"
               fill
               value={theme}
-              onChange={(e) => update({ theme: e.target.value as ThemeName })}
+              onChange={e => update({ theme: e.target.value as ThemeName })}
               options={themeOptions}
             />
           </FormGroup>
@@ -62,7 +58,7 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
               id="settings-language"
               fill
               value={language}
-              onChange={(e) =>
+              onChange={e =>
                 update({ language: e.target.value as LanguageName })
               }
               options={LANGUAGES}
@@ -73,11 +69,11 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
             label={t("fontSize")}
             inline
             selectedValue={fontSize}
-            onChange={(e) =>
+            onChange={e =>
               update({ fontSize: e.currentTarget.value as FontSizeName })
             }
           >
-            {fontOptions.map((size) => (
+            {fontOptions.map(size => (
               <Radio key={size.value} label={size.label} value={size.value} />
             ))}
           </RadioGroup>
@@ -85,7 +81,7 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
           <FormGroup label={t("topicTree")}>
             <Checkbox
               checked={blink}
-              onChange={(e) => update({ blink: e.target.checked })}
+              onChange={e => update({ blink: e.target.checked })}
             >
               {t("blinkOption")}
             </Checkbox>
@@ -93,5 +89,5 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
         </div>
       </DialogBody>
     </Dialog>
-  );
+  )
 }

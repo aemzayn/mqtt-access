@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from "react"
 import {
   Button,
   Checkbox,
@@ -9,26 +9,22 @@ import {
   FormGroup,
   HTMLSelect,
   InputGroup,
-} from "@blueprintjs/core";
-import { openFilePicker } from "../../ipc/commands";
-import { useT } from "../../i18n";
-import type {
-  ConnectionConfig,
-  Protocol,
-  Subscription,
-} from "../../ipc/types";
+} from "@blueprintjs/core"
+import { openFilePicker } from "../../ipc/commands"
+import { useT } from "../../i18n"
+import type { ConnectionConfig, Protocol, Subscription } from "../../ipc/types"
 
 const DEFAULT_PORTS: Record<Protocol, number> = {
   mqtt: 1883,
   mqtts: 8883,
   ws: 8083,
   wss: 8084,
-};
+}
 
 const generateRandomClientId = () => {
-  const randomString = Math.random().toString(36).substring(2, 10);
-  return `mqtt-access-${randomString}`;
-};
+  const randomString = Math.random().toString(36).substring(2, 10)
+  return `mqtt-access-${randomString}`
+}
 
 export function ConnectionFormDialog({
   initial,
@@ -36,25 +32,25 @@ export function ConnectionFormDialog({
   onSave,
   onCancel,
 }: {
-  initial: ConnectionConfig;
-  isNew: boolean;
-  onSave: (config: ConnectionConfig) => void;
-  onCancel: () => void;
+  initial: ConnectionConfig
+  isNew: boolean
+  onSave: (config: ConnectionConfig) => void
+  onCancel: () => void
 }) {
-  const t = useT();
+  const t = useT()
   const [config, setConfig] = useState<ConnectionConfig>({
     ...initial,
     clientId: initial.clientId ?? generateRandomClientId(),
-  });
+  })
 
   const patch = (p: Partial<ConnectionConfig>) =>
-    setConfig((c) => ({ ...c, ...p }));
+    setConfig(c => ({ ...c, ...p }))
 
-  const isTls = config.protocol === "mqtts" || config.protocol === "wss";
-  const isWs = config.protocol === "ws" || config.protocol === "wss";
+  const isTls = config.protocol === "mqtts" || config.protocol === "wss"
+  const isWs = config.protocol === "ws" || config.protocol === "wss"
 
   const setProtocol = (protocol: Protocol) => {
-    const portWasDefault = config.port === DEFAULT_PORTS[config.protocol];
+    const portWasDefault = config.port === DEFAULT_PORTS[config.protocol]
     patch({
       protocol,
       port: portWasDefault ? DEFAULT_PORTS[protocol] : config.port,
@@ -62,36 +58,36 @@ export function ConnectionFormDialog({
         protocol === "mqtts" || protocol === "wss"
           ? (config.tls ?? { allowInvalidCerts: false })
           : config.tls,
-    });
-  };
+    })
+  }
 
   const setSubscription = (index: number, sub: Partial<Subscription>) => {
     const subscriptions = config.subscriptions.map((s, i) =>
       i === index ? { ...s, ...sub } : s,
-    );
-    patch({ subscriptions });
-  };
+    )
+    patch({ subscriptions })
+  }
 
   const pickFile = async (
     field: "caCertPath" | "clientCertPath" | "clientKeyPath",
   ) => {
-    const path = await openFilePicker().catch(() => null);
+    const path = await openFilePicker().catch(() => null)
     if (path) {
       patch({
         tls: { allowInvalidCerts: false, ...config.tls, [field]: path },
-      });
+      })
     }
-  };
+  }
 
   const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!config.host.trim()) return;
+    e.preventDefault()
+    if (!config.host.trim()) return
     onSave({
       ...config,
       name: config.name.trim() || config.host,
-      subscriptions: config.subscriptions.filter((s) => s.topic.trim() !== ""),
-    });
-  };
+      subscriptions: config.subscriptions.filter(s => s.topic.trim() !== ""),
+    })
+  }
 
   return (
     <Dialog
@@ -107,7 +103,7 @@ export function ConnectionFormDialog({
               <InputGroup
                 id="conn-name"
                 value={config.name}
-                onChange={(e) => patch({ name: e.target.value })}
+                onChange={e => patch({ name: e.target.value })}
                 placeholder={t("namePlaceholder")}
                 autoFocus
               />
@@ -118,7 +114,7 @@ export function ConnectionFormDialog({
                 <HTMLSelect
                   fill
                   value={config.protocol}
-                  onChange={(e) => setProtocol(e.target.value as Protocol)}
+                  onChange={e => setProtocol(e.target.value as Protocol)}
                   options={[
                     { value: "mqtt", label: "mqtt://" },
                     { value: "mqtts", label: "mqtts://" },
@@ -127,23 +123,31 @@ export function ConnectionFormDialog({
                   ]}
                 />
               </FormGroup>
-              <FormGroup label={t("host")} labelFor="conn-host" className="form-grow">
+              <FormGroup
+                label={t("host")}
+                labelFor="conn-host"
+                className="form-grow"
+              >
                 <InputGroup
                   id="conn-host"
                   required
                   value={config.host}
-                  onChange={(e) => patch({ host: e.target.value })}
+                  onChange={e => patch({ host: e.target.value })}
                   placeholder="broker.example.com"
                 />
               </FormGroup>
-              <FormGroup label={t("port")} labelFor="conn-port" className="form-narrow">
+              <FormGroup
+                label={t("port")}
+                labelFor="conn-port"
+                className="form-narrow"
+              >
                 <InputGroup
                   id="conn-port"
                   type="number"
                   min={1}
                   max={65535}
                   value={String(config.port)}
-                  onChange={(e) => patch({ port: Number(e.target.value) })}
+                  onChange={e => patch({ port: Number(e.target.value) })}
                 />
               </FormGroup>
             </div>
@@ -153,7 +157,7 @@ export function ConnectionFormDialog({
                 <InputGroup
                   id="conn-ws-path"
                   value={config.wsPath ?? ""}
-                  onChange={(e) => patch({ wsPath: e.target.value || null })}
+                  onChange={e => patch({ wsPath: e.target.value || null })}
                   placeholder="/mqtt"
                 />
               </FormGroup>
@@ -168,7 +172,7 @@ export function ConnectionFormDialog({
                 <InputGroup
                   id="conn-username"
                   value={config.username ?? ""}
-                  onChange={(e) => patch({ username: e.target.value || null })}
+                  onChange={e => patch({ username: e.target.value || null })}
                   autoComplete="off"
                 />
               </FormGroup>
@@ -181,7 +185,7 @@ export function ConnectionFormDialog({
                   id="conn-password"
                   type="password"
                   value={config.password ?? ""}
-                  onChange={(e) => patch({ password: e.target.value || null })}
+                  onChange={e => patch({ password: e.target.value || null })}
                   autoComplete="new-password"
                 />
               </FormGroup>
@@ -197,7 +201,7 @@ export function ConnectionFormDialog({
                 <InputGroup
                   id="conn-client-id"
                   value={config.clientId ?? ""}
-                  onChange={(e) => patch({ clientId: e.target.value || null })}
+                  onChange={e => patch({ clientId: e.target.value || null })}
                 />
               </FormGroup>
               <FormGroup
@@ -210,7 +214,7 @@ export function ConnectionFormDialog({
                   type="number"
                   min={5}
                   value={String(config.keepAliveSecs)}
-                  onChange={(e) =>
+                  onChange={e =>
                     patch({ keepAliveSecs: Number(e.target.value) })
                   }
                 />
@@ -226,7 +230,7 @@ export function ConnectionFormDialog({
                   min={1}
                   max={100000}
                   value={String(config.historyLimit)}
-                  onChange={(e) =>
+                  onChange={e =>
                     patch({ historyLimit: Number(e.target.value) })
                   }
                 />
@@ -240,14 +244,14 @@ export function ConnectionFormDialog({
                   <InputGroup
                     className="form-grow"
                     value={sub.topic}
-                    onChange={(e) =>
+                    onChange={e =>
                       setSubscription(i, { topic: e.target.value })
                     }
                     placeholder="topic/filter/#"
                   />
                   <HTMLSelect
                     value={sub.qos}
-                    onChange={(e) =>
+                    onChange={e =>
                       setSubscription(i, { qos: Number(e.target.value) })
                     }
                     options={[
@@ -335,7 +339,7 @@ export function ConnectionFormDialog({
                 />
                 <Checkbox
                   checked={config.tls?.allowInvalidCerts ?? false}
-                  onChange={(e) =>
+                  onChange={e =>
                     patch({
                       tls: {
                         ...config.tls,
@@ -351,7 +355,7 @@ export function ConnectionFormDialog({
 
             <Checkbox
               checked={config.connectOnStartup}
-              onChange={(e) => patch({ connectOnStartup: e.target.checked })}
+              onChange={e => patch({ connectOnStartup: e.target.checked })}
             >
               {t("connectOnStartup")}
             </Checkbox>
@@ -369,7 +373,7 @@ export function ConnectionFormDialog({
         />
       </form>
     </Dialog>
-  );
+  )
 }
 
 function FilePickerRow({
@@ -378,12 +382,12 @@ function FilePickerRow({
   onPick,
   onClear,
 }: {
-  label: string;
-  value: string | null | undefined;
-  onPick: () => void;
-  onClear: () => void;
+  label: string
+  value: string | null | undefined
+  onPick: () => void
+  onClear: () => void
 }) {
-  const t = useT();
+  const t = useT()
   return (
     <div className="form-row form-file">
       <span className="form-file-label">{label}</span>
@@ -403,5 +407,5 @@ function FilePickerRow({
         />
       )}
     </div>
-  );
+  )
 }

@@ -1,6 +1,6 @@
-import { useMemo } from "react";
-import { useSettingsStore } from "../stores/settingsStore";
-import type { LanguageName } from "../ipc/commands";
+import { useMemo } from "react"
+import { useSettingsStore } from "../stores/settingsStore"
+import type { LanguageName } from "../ipc/commands"
 
 // Native names, deliberately not translated.
 export const LANGUAGES: { value: LanguageName; label: string }[] = [
@@ -12,7 +12,7 @@ export const LANGUAGES: { value: LanguageName; label: string }[] = [
   { value: "es", label: "Español" },
   { value: "de", label: "Deutsch" },
   { value: "fr", label: "Français" },
-];
+]
 
 const en = {
   appLoading: "Loading…",
@@ -96,10 +96,10 @@ const en = {
   published: "Published ✓",
   payload: "Payload",
   retain: "Retain",
-};
+}
 
-export type MsgKey = keyof typeof en;
-type Dict = Record<MsgKey, string>;
+export type MsgKey = keyof typeof en
+type Dict = Record<MsgKey, string>
 
 const tr: Dict = {
   appLoading: "Yükleniyor…",
@@ -183,7 +183,7 @@ const tr: Dict = {
   published: "Yayınlandı ✓",
   payload: "Veri",
   retain: "Kalıcı",
-};
+}
 
 const id: Dict = {
   appLoading: "Memuat…",
@@ -267,7 +267,7 @@ const id: Dict = {
   published: "Diterbitkan ✓",
   payload: "Muatan",
   retain: "Retain",
-};
+}
 
 const ja: Dict = {
   appLoading: "読み込み中…",
@@ -351,7 +351,7 @@ const ja: Dict = {
   published: "送信済み ✓",
   payload: "ペイロード",
   retain: "Retain",
-};
+}
 
 const zh: Dict = {
   appLoading: "加载中…",
@@ -435,7 +435,7 @@ const zh: Dict = {
   published: "已发布 ✓",
   payload: "负载",
   retain: "保留",
-};
+}
 
 const es: Dict = {
   appLoading: "Cargando…",
@@ -519,7 +519,7 @@ const es: Dict = {
   published: "Publicado ✓",
   payload: "Carga útil",
   retain: "Retener",
-};
+}
 
 const de: Dict = {
   appLoading: "Wird geladen…",
@@ -603,7 +603,7 @@ const de: Dict = {
   published: "Veröffentlicht ✓",
   payload: "Payload",
   retain: "Retain",
-};
+}
 
 const fr: Dict = {
   appLoading: "Chargement…",
@@ -687,27 +687,27 @@ const fr: Dict = {
   published: "Publié ✓",
   payload: "Charge utile",
   retain: "Retenir",
-};
+}
 
-const DICTS: Record<LanguageName, Dict> = { en, tr, id, ja, zh, es, de, fr };
+const DICTS: Record<LanguageName, Dict> = { en, tr, id, ja, zh, es, de, fr }
 
 export type Translate = (
   key: MsgKey,
   vars?: Record<string, string | number>,
-) => string;
+) => string
 
 function makeT(language: LanguageName): Translate {
-  const dict = DICTS[language] ?? en;
+  const dict = DICTS[language] ?? en
   return (key, vars) => {
-    const template = dict[key] ?? en[key];
-    if (!vars) return template;
+    const template = dict[key] ?? en[key]
+    if (!vars) return template
     return template.replace(/\{(\w+)\}/g, (match, name) =>
       name in vars ? String(vars[name]) : match,
-    );
-  };
+    )
+  }
 }
 
 export function useT(): Translate {
-  const language = useSettingsStore((s) => s.language);
-  return useMemo(() => makeT(language), [language]);
+  const language = useSettingsStore(s => s.language)
+  return useMemo(() => makeT(language), [language])
 }

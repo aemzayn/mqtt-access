@@ -1,39 +1,36 @@
-import { useState } from "react";
-import { nanoid } from "nanoid";
-import { Button } from "@blueprintjs/core";
-import { useConnectionsStore } from "../../stores/connectionsStore";
-import { useLayoutStore } from "../../stores/layoutStore";
-import {
-  defaultConnectionConfig,
-  type ConnectionConfig,
-} from "../../ipc/types";
-import { ConnectionRow } from "./ConnectionRow";
-import { ConnectionFormDialog } from "./ConnectionFormDialog";
-import { SettingsDialog } from "../settings/SettingsDialog";
-import { useT } from "../../i18n";
+import { useState } from "react"
+import { nanoid } from "nanoid"
+import { Button } from "@blueprintjs/core"
+import { useConnectionsStore } from "../../stores/connectionsStore"
+import { useLayoutStore } from "../../stores/layoutStore"
+import { defaultConnectionConfig, type ConnectionConfig } from "../../ipc/types"
+import { ConnectionRow } from "./ConnectionRow"
+import { ConnectionFormDialog } from "./ConnectionFormDialog"
+import { SettingsDialog } from "../settings/SettingsDialog"
+import { useT } from "../../i18n"
 
 export function Sidebar() {
-  const configs = useConnectionsStore((s) => s.configs);
-  const hasActive = useConnectionsStore((s) =>
+  const configs = useConnectionsStore(s => s.configs)
+  const hasActive = useConnectionsStore(s =>
     Object.values(s.statuses).some(
-      (status) => status !== "disconnected" && status !== "error",
+      status => status !== "disconnected" && status !== "error",
     ),
-  );
-  const [editing, setEditing] = useState<ConnectionConfig | null>(null);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const t = useT();
+  )
+  const [editing, setEditing] = useState<ConnectionConfig | null>(null)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const t = useT()
 
-  const startAdd = () => setEditing(defaultConnectionConfig(nanoid(10)));
+  const startAdd = () => setEditing(defaultConnectionConfig(nanoid(10)))
 
   const save = async (config: ConnectionConfig) => {
-    await useConnectionsStore.getState().upsert(config);
-    setEditing(null);
-  };
+    await useConnectionsStore.getState().upsert(config)
+    setEditing(null)
+  }
 
   const remove = async (id: string) => {
-    useLayoutStore.getState().closePanel(id);
-    await useConnectionsStore.getState().remove(id);
-  };
+    useLayoutStore.getState().closePanel(id)
+    await useConnectionsStore.getState().remove(id)
+  }
 
   return (
     <aside className="sidebar">
@@ -76,7 +73,7 @@ export function Sidebar() {
             {t("addOneHint")}
           </div>
         )}
-        {configs.map((config) => (
+        {configs.map(config => (
           <ConnectionRow
             key={config.id}
             config={config}
@@ -89,13 +86,15 @@ export function Sidebar() {
       {editing && (
         <ConnectionFormDialog
           initial={editing}
-          isNew={!configs.some((c) => c.id === editing.id)}
+          isNew={!configs.some(c => c.id === editing.id)}
           onSave={save}
           onCancel={() => setEditing(null)}
         />
       )}
 
-      {settingsOpen && <SettingsDialog onClose={() => setSettingsOpen(false)} />}
+      {settingsOpen && (
+        <SettingsDialog onClose={() => setSettingsOpen(false)} />
+      )}
     </aside>
-  );
+  )
 }

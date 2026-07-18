@@ -1,59 +1,59 @@
-import { useCallback, useRef, useState } from "react";
-import type { DockviewPanelApi } from "dockview-react";
-import { Button } from "@blueprintjs/core";
-import { useConnectionsStore } from "../../stores/connectionsStore";
-import { useLayoutStore } from "../../stores/layoutStore";
+import { useCallback, useRef, useState } from "react"
+import type { DockviewPanelApi } from "dockview-react"
+import { Button } from "@blueprintjs/core"
+import { useConnectionsStore } from "../../stores/connectionsStore"
+import { useLayoutStore } from "../../stores/layoutStore"
 import {
   getMirror,
   resetMirror,
   useMirrorVersion,
-} from "../../stores/treeMirror";
-import { clearConnectionData } from "../../ipc/commands";
-import { TopicTree } from "../tree/TopicTree";
-import { useT } from "../../i18n";
-import { DetailsPane } from "../details/DetailsPane";
+} from "../../stores/treeMirror"
+import { clearConnectionData } from "../../ipc/commands"
+import { TopicTree } from "../tree/TopicTree"
+import { useT } from "../../i18n"
+import { DetailsPane } from "../details/DetailsPane"
 
 export function ConnectionPanel({
   connectionId,
   panelApi,
 }: {
-  connectionId: string;
-  panelApi: DockviewPanelApi;
+  connectionId: string
+  panelApi: DockviewPanelApi
 }) {
-  const t = useT();
-  useMirrorVersion(connectionId); // keeps header stats live
+  const t = useT()
+  useMirrorVersion(connectionId) // keeps header stats live
   const status =
-    useConnectionsStore((s) => s.statuses[connectionId]) ?? "disconnected";
-  const error = useConnectionsStore((s) => s.errors[connectionId]);
-  const config = useConnectionsStore((s) =>
-    s.configs.find((c) => c.id === connectionId),
-  );
-  const mirror = getMirror(connectionId);
+    useConnectionsStore(s => s.statuses[connectionId]) ?? "disconnected"
+  const error = useConnectionsStore(s => s.errors[connectionId])
+  const config = useConnectionsStore(s =>
+    s.configs.find(c => c.id === connectionId),
+  )
+  const mirror = getMirror(connectionId)
 
-  const [treeWidthPct, setTreeWidthPct] = useState(55);
-  const bodyRef = useRef<HTMLDivElement>(null);
+  const [treeWidthPct, setTreeWidthPct] = useState(55)
+  const bodyRef = useRef<HTMLDivElement>(null)
 
   const startDrag = useCallback((e: React.PointerEvent) => {
-    const body = bodyRef.current;
-    if (!body) return;
-    e.preventDefault();
-    const rect = body.getBoundingClientRect();
+    const body = bodyRef.current
+    if (!body) return
+    e.preventDefault()
+    const rect = body.getBoundingClientRect()
     const move = (ev: PointerEvent) => {
-      const pct = ((ev.clientX - rect.left) / rect.width) * 100;
-      setTreeWidthPct(Math.min(85, Math.max(15, pct)));
-    };
+      const pct = ((ev.clientX - rect.left) / rect.width) * 100
+      setTreeWidthPct(Math.min(85, Math.max(15, pct)))
+    }
     const up = () => {
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerup", up);
-    };
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", up);
-  }, []);
+      window.removeEventListener("pointermove", move)
+      window.removeEventListener("pointerup", up)
+    }
+    window.addEventListener("pointermove", move)
+    window.addEventListener("pointerup", up)
+  }, [])
 
   const clearData = async () => {
-    await clearConnectionData(connectionId).catch(() => {});
-    resetMirror(connectionId);
-  };
+    await clearConnectionData(connectionId).catch(() => {})
+    resetMirror(connectionId)
+  }
 
   return (
     <div className="conn-panel">
@@ -62,9 +62,7 @@ export function ConnectionPanel({
           className={`status-dot status-${status}`}
           title={error ?? status}
         />
-        <span className="conn-panel-title">
-          {config?.name ?? connectionId}
-        </span>
+        <span className="conn-panel-title">{config?.name ?? connectionId}</span>
         <span className="conn-panel-stats">
           {t("stats", {
             topics: mirror.totalTopics,
@@ -102,5 +100,5 @@ export function ConnectionPanel({
         </div>
       </div>
     </div>
-  );
+  )
 }

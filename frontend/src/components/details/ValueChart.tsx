@@ -1,23 +1,23 @@
-import { useEffect, useRef } from "react";
-import uPlot from "uplot";
-import "uplot/dist/uPlot.min.css";
-import { useT } from "../../i18n";
+import { useEffect, useRef } from "react"
+import uPlot from "uplot"
+import "uplot/dist/uPlot.min.css"
+import { useT } from "../../i18n"
 
 export interface ChartPoint {
-  ts: number;
-  value: number;
+  ts: number
+  value: number
 }
 
-const MAX_POINTS = 10_000;
+const MAX_POINTS = 10_000
 
 export function ValueChart({ points }: { points: ChartPoint[] }) {
-  const t = useT();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const plotRef = useRef<uPlot | null>(null);
+  const t = useT()
+  const containerRef = useRef<HTMLDivElement>(null)
+  const plotRef = useRef<uPlot | null>(null)
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    const container = containerRef.current
+    if (!container) return
 
     const plot = new uPlot(
       {
@@ -42,30 +42,30 @@ export function ValueChart({ points }: { points: ChartPoint[] }) {
       },
       [[], []],
       container,
-    );
-    plotRef.current = plot;
+    )
+    plotRef.current = plot
 
     const observer = new ResizeObserver(() => {
       plot.setSize({
         width: container.clientWidth || 400,
         height: container.clientHeight || 240,
-      });
-    });
-    observer.observe(container);
+      })
+    })
+    observer.observe(container)
 
     return () => {
-      observer.disconnect();
-      plot.destroy();
-      plotRef.current = null;
-    };
-  }, []);
+      observer.disconnect()
+      plot.destroy()
+      plotRef.current = null
+    }
+  }, [])
 
   useEffect(() => {
-    const windowed = points.slice(-MAX_POINTS);
-    const xs = windowed.map((p) => p.ts / 1000);
-    const ys = windowed.map((p) => p.value);
-    plotRef.current?.setData([xs, ys]);
-  }, [points]);
+    const windowed = points.slice(-MAX_POINTS)
+    const xs = windowed.map(p => p.ts / 1000)
+    const ys = windowed.map(p => p.value)
+    plotRef.current?.setData([xs, ys])
+  }, [points])
 
   return (
     <div className="value-chart-wrap">
@@ -76,5 +76,5 @@ export function ValueChart({ points }: { points: ChartPoint[] }) {
         </div>
       )}
     </div>
-  );
+  )
 }

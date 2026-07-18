@@ -3,28 +3,28 @@ import type {
   MessageRecord,
   TopicDetails,
   TopicUpdate,
-} from "./types";
+} from "./types"
 
 // Thin type-safe wrapper around the Wails Go binding bridge.
 // window['go']['main']['App'] is populated at runtime by Wails.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const go = () => (window as any)["go"]["main"]["App"];
+const go = () => (window as any)["go"]["main"]["App"]
 
 function call<T>(method: string, ...args: unknown[]): Promise<T> {
-  return go()[method](...args) as Promise<T>;
+  return go()[method](...args) as Promise<T>
 }
 
 export interface StoredLayout {
-  dockview: unknown | null;
-  minimized: string[];
-  openPanels: string[];
+  dockview: unknown | null
+  minimized: string[]
+  openPanels: string[]
 }
 
 export const connect = (config: ConnectionConfig) =>
-  call<void>("Connect", config);
+  call<void>("Connect", config)
 
 export const disconnect = (connectionId: string) =>
-  call<void>("Disconnect", connectionId);
+  call<void>("Disconnect", connectionId)
 
 export const publish = (
   connectionId: string,
@@ -32,13 +32,13 @@ export const publish = (
   payloadB64: string,
   qos: number,
   retain: boolean,
-) => call<void>("Publish", connectionId, topic, payloadB64, qos, retain);
+) => call<void>("Publish", connectionId, topic, payloadB64, qos, retain)
 
 export const getTreeSnapshot = (connectionId: string) =>
-  call<TopicUpdate[]>("GetTreeSnapshot", connectionId);
+  call<TopicUpdate[]>("GetTreeSnapshot", connectionId)
 
 export const getTopicDetails = (connectionId: string, topic: string) =>
-  call<TopicDetails>("GetTopicDetails", connectionId, topic);
+  call<TopicDetails>("GetTopicDetails", connectionId, topic)
 
 export const getTopicHistory = (
   connectionId: string,
@@ -52,59 +52,43 @@ export const getTopicHistory = (
     topic,
     limit,
     beforeSeq ?? null,
-  );
+  )
 
 export const watchTopic = (connectionId: string, topic: string) =>
-  call<void>("WatchTopic", connectionId, topic);
+  call<void>("WatchTopic", connectionId, topic)
 
 export const unwatchTopic = (connectionId: string) =>
-  call<void>("UnwatchTopic", connectionId);
+  call<void>("UnwatchTopic", connectionId)
 
 export const clearConnectionData = (connectionId: string) =>
-  call<void>("ClearConnectionData", connectionId);
+  call<void>("ClearConnectionData", connectionId)
 
-export const loadConnections = () =>
-  call<ConnectionConfig[]>("LoadConnections");
+export const loadConnections = () => call<ConnectionConfig[]>("LoadConnections")
 
 export const saveConnections = (configs: ConnectionConfig[]) =>
-  call<void>("SaveConnections", configs);
+  call<void>("SaveConnections", configs)
 
-export const loadLayout = () =>
-  call<StoredLayout | null>("LoadLayout");
+export const loadLayout = () => call<StoredLayout | null>("LoadLayout")
 
-export const saveLayout = (data: StoredLayout) =>
-  call<void>("SaveLayout", data);
+export const saveLayout = (data: StoredLayout) => call<void>("SaveLayout", data)
 
-export const openFilePicker = () =>
-  call<string>("OpenFilePicker");
+export const openFilePicker = () => call<string>("OpenFilePicker")
 
 export interface AppSettings {
-  theme: ThemeName;
-  fontSize: FontSizeName;
-  blink: boolean;
-  language: LanguageName;
+  theme: ThemeName
+  fontSize: FontSizeName
+  blink: boolean
+  language: LanguageName
 }
 
-export type LanguageName =
-  | "en"
-  | "tr"
-  | "id"
-  | "ja"
-  | "zh"
-  | "es"
-  | "de"
-  | "fr";
+export type LanguageName = "en" | "tr" | "id" | "ja" | "zh" | "es" | "de" | "fr"
 
 export type ThemeName =
-  | "dark"
-  | "light"
-  | "dracula"
-  | "dark-contrast"
-  | "light-contrast";
+  "dark" | "light" | "dracula" | "dark-contrast" | "light-contrast"
 
-export type FontSizeName = "small" | "normal" | "big";
+export type FontSizeName = "small" | "normal" | "big"
 
-export const loadSettings = () => call<AppSettings>("LoadSettings");
+export const loadSettings = () => call<AppSettings>("LoadSettings")
 
 export const saveSettings = (settings: AppSettings) =>
-  call<void>("SaveSettings", settings);
+  call<void>("SaveSettings", settings)

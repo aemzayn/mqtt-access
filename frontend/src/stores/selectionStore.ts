@@ -1,21 +1,21 @@
-import { create } from "zustand";
-import * as commands from "../ipc/commands";
+import { create } from "zustand"
+import * as commands from "../ipc/commands"
 
 interface SelectionState {
-  selected: Record<string, string | null>;
-  select: (connectionId: string, topic: string | null) => void;
+  selected: Record<string, string | null>
+  select: (connectionId: string, topic: string | null) => void
 }
 
-export const useSelectionStore = create<SelectionState>((set) => ({
+export const useSelectionStore = create<SelectionState>(set => ({
   selected: {},
   select: (connectionId, topic) => {
-    set((state) => ({
+    set(state => ({
       selected: { ...state.selected, [connectionId]: topic },
-    }));
+    }))
     if (topic) {
-      commands.watchTopic(connectionId, topic).catch(() => {});
+      commands.watchTopic(connectionId, topic).catch(() => {})
     } else {
-      commands.unwatchTopic(connectionId).catch(() => {});
+      commands.unwatchTopic(connectionId).catch(() => {})
     }
   },
-}));
+}))
