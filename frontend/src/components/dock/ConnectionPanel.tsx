@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import type { DockviewPanelApi } from "dockview-react";
+import { Button } from "@blueprintjs/core";
 import { useConnectionsStore } from "../../stores/connectionsStore";
 import { useLayoutStore } from "../../stores/layoutStore";
 import {
@@ -10,18 +11,6 @@ import {
 import { clearConnectionData } from "../../ipc/commands";
 import { TopicTree } from "../tree/TopicTree";
 import { DetailsPane } from "../details/DetailsPane";
-import { Button, Classes, Tooltip } from "@blueprintjs/core";
-
-type ConnectionStatus =
-  "connected" | "connecting" | "reconnecting" | "error" | "disconnected";
-
-const STATUS_DOT: Record<ConnectionStatus, string> = {
-  connected: "bg-[#4ec9b0]",
-  connecting: "bg-[#cca700]",
-  reconnecting: "bg-[#cca700]",
-  error: "bg-[#f14c4c]",
-  disconnected: "bg-[#969696]",
-};
 
 export function ConnectionPanel({
   connectionId,
@@ -30,9 +19,10 @@ export function ConnectionPanel({
   connectionId: string;
   panelApi: DockviewPanelApi;
 }) {
-  useMirrorVersion(connectionId);
+  useMirrorVersion(connectionId); // keeps header stats live
   const status =
     useConnectionsStore((s) => s.statuses[connectionId]) ?? "disconnected";
+  const error = useConnectionsStore((s) => s.errors[connectionId]);
   const config = useConnectionsStore((s) =>
     s.configs.find((c) => c.id === connectionId),
   );
@@ -64,34 +54,45 @@ export function ConnectionPanel({
   };
 
   return (
-    <div>
-      <div>
-        <Tooltip content={status} className={Classes.TOOLTIP_INDICATOR}>
-          <span />
-        </Tooltip>
-        <span>{config?.name ?? connectionId}</span>
-        <span>
+    <div className="conn-panel">
+      <div className="conn-panel-header">
+        <span
+          className={`status-dot status-${status}`}
+          title={error ?? status}
+        />
+        <span className="conn-panel-title">
+          {config?.name ?? connectionId}
+        </span>
+        <span className="conn-panel-stats">
           {mirror.totalTopics} topics · {mirror.totalMessages} msgs ·{" "}
           {mirror.messageRate.toFixed(mirror.messageRate < 10 ? 1 : 0)} msg/s
         </span>
-        <div>
-          <Button onClick={clearData}>Clear</Button>
-          <Button onClick={() => panelApi.maximize()}>Maximize</Button>
-          <Button
-            onClick={() => useLayoutStore.getState().minimize(connectionId)}
-          >
-            Minimize
+        <span className="conn-panel-actions">
+          <Button size="small" onClick={clearData} title="Clear collected data">
+            Clear
           </Button>
-        </div>
+          <Button
+            size="small"
+            icon="maximize"
+            onClick={() => panelApi.maximize()}
+            aria-label="Maximize panel"
+            title="Maximize panel"
+          />
+          <Button
+            size="small"
+            icon="minus"
+            onClick={() => useLayoutStore.getState().minimize(connectionId)}
+            aria-label="Minimize to strip"
+            title="Minimize to strip"
+          />
+        </span>
       </div>
-
-      {/* body */}
-      <div ref={bodyRef}>
-        <div style={{ width: `${treeWidthPct}%` }}>
+      <div className="conn-panel-body" ref={bodyRef}>
+        <div className="conn-panel-tree" style={{ width: `${treeWidthPct}%` }}>
           <TopicTree connectionId={connectionId} />
         </div>
-        <div onPointerDown={startDrag} />
-        <div>
+        <div className="conn-panel-divider" onPointerDown={startDrag} />
+        <div className="conn-panel-details">
           <DetailsPane connectionId={connectionId} />
         </div>
       </div>

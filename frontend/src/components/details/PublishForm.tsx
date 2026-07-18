@@ -1,4 +1,11 @@
 import { useEffect, useState } from "react";
+import {
+  Button,
+  Checkbox,
+  HTMLSelect,
+  InputGroup,
+  TextArea,
+} from "@blueprintjs/core";
 import { publish } from "../../ipc/commands";
 import { encodeUtf8ToB64 } from "../../lib/b64";
 
@@ -52,7 +59,7 @@ export function PublishForm({
       </button>
       {open && (
         <form onSubmit={send} className="publish-body">
-          <input
+          <InputGroup
             value={topic}
             onChange={(e) => {
               setTopic(e.target.value);
@@ -61,30 +68,36 @@ export function PublishForm({
             placeholder="topic/to/publish"
             required
           />
-          <textarea
+          <TextArea
             value={payload}
             onChange={(e) => setPayload(e.target.value)}
             placeholder="Payload"
             rows={3}
+            fill
           />
           <div className="publish-row">
-            <select
+            <HTMLSelect
               value={qos}
               onChange={(e) => setQos(Number(e.target.value))}
+              options={[
+                { value: 0, label: "QoS 0" },
+                { value: 1, label: "QoS 1" },
+                { value: 2, label: "QoS 2" },
+              ]}
+            />
+            <Checkbox
+              checked={retain}
+              onChange={(e) => setRetain(e.target.checked)}
             >
-              <option value={0}>QoS 0</option>
-              <option value={1}>QoS 1</option>
-              <option value={2}>QoS 2</option>
-            </select>
-            <label className="form-check">
-              <input
-                type="checkbox"
-                checked={retain}
-                onChange={(e) => setRetain(e.target.checked)}
-              />
               Retain
-            </label>
-            <button type="submit">Publish</button>
+            </Checkbox>
+            <Button
+              type="submit"
+              intent="primary"
+              className="publish-submit"
+            >
+              Publish
+            </Button>
           </div>
         </form>
       )}

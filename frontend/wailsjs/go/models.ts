@@ -1,5 +1,21 @@
 export namespace main {
 	
+	export class AppSettings {
+	    theme: string;
+	    fontSize: string;
+	    blink: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new AppSettings(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.theme = source["theme"];
+	        this.fontSize = source["fontSize"];
+	        this.blink = source["blink"];
+	    }
+	}
 	export class StoredLayout {
 	    dockview: any;
 	    minimized: string[];

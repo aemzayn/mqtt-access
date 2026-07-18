@@ -18,6 +18,13 @@ type StoredLayout struct {
 	OpenPanels []string    `json:"openPanels"`
 }
 
+// AppSettings mirrors the frontend's AppSettings type.
+type AppSettings struct {
+	Theme    string `json:"theme"`
+	FontSize string `json:"fontSize"`
+	Blink    bool   `json:"blink"`
+}
+
 type App struct {
 	ctx   context.Context
 	state *AppState
@@ -65,6 +72,12 @@ func (a *App) Disconnect(connectionID string) error {
 		return err
 	}
 	handle.Stop()
+	// Paho fires no callback on a clean disconnect, so report it ourselves —
+	// otherwise the frontend keeps showing the connection as active.
+	runtime.EventsEmit(a.ctx, mqttpkg.EventStatus, mqttpkg.StatusEvent{
+		ConnectionID: connectionID,
+		Status:       mqttpkg.StatusDisconnected,
+	})
 	return nil
 }
 
@@ -173,6 +186,18 @@ func (a *App) LoadLayout() (*StoredLayout, error) {
 
 func (a *App) SaveLayout(data StoredLayout) error {
 	return storage.Save("layout.json", data)
+}
+
+func (a *App) LoadSettings() (*AppSettings, error) {
+	settings := AppSettings{Theme: "dark", FontSize: "normal", Blink: true}
+	if err := storage.Load("settings.json", &settings); err != nil {
+		return nil, err
+	}
+	return &settings, nil
+}
+
+func (a *App) SaveSettings(settings AppSettings) error {
+	return storage.Save("settings.json", settings)
 }
 
 // ── System dialogs ────────────────────────────────────────────────────────────

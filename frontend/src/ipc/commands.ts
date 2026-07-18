@@ -77,3 +77,23 @@ export const saveLayout = (data: StoredLayout) =>
 
 export const openFilePicker = () =>
   call<string>("OpenFilePicker");
+
+export interface AppSettings {
+  theme: ThemeName;
+  fontSize: FontSizeName;
+  blink: boolean;
+}
+
+export type ThemeName =
+  | "dark"
+  | "light"
+  | "dracula"
+  | "dark-contrast"
+  | "light-contrast";
+
+export type FontSizeName = "small" | "normal" | "big";
+
+export const loadSettings = () => call<AppSettings>("LoadSettings");
+
+export const saveSettings = (settings: AppSettings) =>
+  call<void>("SaveSettings", settings);

@@ -12,6 +12,7 @@ export interface MirrorNode {
   retain: boolean;
   numeric: number | null;
   subtreeTopicCount: number;
+  subtreeMsgCount: number;
 }
 
 export interface FlatRow {
@@ -24,6 +25,7 @@ export interface FlatRow {
   preview: string;
   msgCount: number;
   subtreeTopicCount: number;
+  subtreeMsgCount: number;
   retain: boolean;
 }
 
@@ -40,6 +42,7 @@ function makeNode(segment: string, path: string): MirrorNode {
     retain: false,
     numeric: null,
     subtreeTopicCount: 0,
+    subtreeMsgCount: 0,
   };
 }
 
@@ -69,6 +72,13 @@ export function applyUpdates(root: MirrorNode, updates: TopicUpdate[]): void {
       node.hasMessage = true;
       for (const ancestor of ancestors) {
         ancestor.subtreeTopicCount += 1;
+      }
+    }
+    // Propagate the message delta so ancestor rows can signal child activity.
+    const msgDelta = update.msgCount - node.msgCount;
+    if (msgDelta !== 0) {
+      for (const ancestor of ancestors) {
+        ancestor.subtreeMsgCount += msgDelta;
       }
     }
     node.preview = update.preview;
@@ -112,6 +122,7 @@ export function flattenVisible(
         preview: child.preview,
         msgCount: child.msgCount,
         subtreeTopicCount: child.subtreeTopicCount,
+        subtreeMsgCount: child.subtreeMsgCount,
         retain: child.retain,
       });
       if (isExpanded) visit(child, depth + 1);

@@ -1,14 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import {
+  DockviewDefaultTab,
   DockviewReact,
+  themeDark,
+  themeDracula,
+  themeLight,
   themeVisualStudio,
   type DockviewApi,
   type DockviewReadyEvent,
+  type IDockviewDefaultTabProps,
   type IDockviewPanelProps,
 } from "dockview-react";
 import "dockview-react/dist/styles/dockview.css";
 import { useLayoutStore } from "../../stores/layoutStore";
 import { useConnectionsStore } from "../../stores/connectionsStore";
+import { useSettingsStore } from "../../stores/settingsStore";
+import type { ThemeName } from "../../ipc/commands";
 import { ConnectionPanel } from "./ConnectionPanel";
 import { setDockApi } from "./dockApi";
 
@@ -25,12 +32,36 @@ function ConnectionPanelHost(
 
 const components = { connection: ConnectionPanelHost };
 
+// Default tab plus middle-click-to-close, like browser tabs.
+function MiddleCloseTab(props: IDockviewDefaultTabProps) {
+  return (
+    <DockviewDefaultTab
+      {...props}
+      onMouseDown={(e) => {
+        if (e.button === 1) {
+          e.preventDefault();
+          props.api.close();
+        }
+      }}
+    />
+  );
+}
+
+const DOCKVIEW_THEMES: Record<ThemeName, typeof themeVisualStudio> = {
+  dark: themeVisualStudio,
+  light: themeLight,
+  dracula: themeDracula,
+  "dark-contrast": themeDark,
+  "light-contrast": themeLight,
+};
+
 export function DockArea() {
   const apiRef = useRef<DockviewApi | null>(null);
   const [apiReady, setApiReady] = useState(false);
   const openPanels = useLayoutStore((s) => s.openPanels);
   const minimized = useLayoutStore((s) => s.minimized);
   const configs = useConnectionsStore((s) => s.configs);
+  const theme = useSettingsStore((s) => s.theme);
 
   const onReady = (event: DockviewReadyEvent) => {
     apiRef.current = event.api;
@@ -89,17 +120,18 @@ export function DockArea() {
   }, [openPanels, minimized, configs, apiReady]);
 
   return (
-    <div>
+    <div className="dock-area">
       {/* dndStrategy="pointer" avoids OS-level drag interception in WebView2 */}
       <DockviewReact
-        theme={themeVisualStudio}
+        theme={DOCKVIEW_THEMES[theme] ?? themeVisualStudio}
         components={components}
+        defaultTabComponent={MiddleCloseTab}
         onReady={onReady}
         dndStrategy="pointer"
       />
       {openPanels.length === 0 && (
-        <div>
-          <p>Connect to a broker to open its topic tree here.</p>
+        <div className="dock-empty">
+          Connect to a broker to open its topic tree here.
         </div>
       )}
     </div>

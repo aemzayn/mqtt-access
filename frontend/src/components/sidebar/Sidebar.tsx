@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { nanoid } from "nanoid";
-import { useConnectionsStore } from "../../stores/connectionsStore";
 import { Button } from "@blueprintjs/core";
+import { useConnectionsStore } from "../../stores/connectionsStore";
 import { useLayoutStore } from "../../stores/layoutStore";
 import {
   defaultConnectionConfig,
@@ -9,11 +9,12 @@ import {
 } from "../../ipc/types";
 import { ConnectionRow } from "./ConnectionRow";
 import { ConnectionFormDialog } from "./ConnectionFormDialog";
-import { PlusIcon } from "lucide-react";
+import { SettingsDialog } from "../settings/SettingsDialog";
 
 export function Sidebar() {
   const configs = useConnectionsStore((s) => s.configs);
   const [editing, setEditing] = useState<ConnectionConfig | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const startAdd = () => setEditing(defaultConnectionConfig(nanoid(10)));
 
@@ -28,16 +29,37 @@ export function Sidebar() {
   };
 
   return (
-    <aside>
-      <div>
-        <span>Connections</span>
-        <Button size="small" onClick={startAdd} variant="minimal">
-          <PlusIcon />
-        </Button>
+    <aside className="sidebar">
+      <div className="sidebar-header">
+        <span className="sidebar-title">Connections</span>
+        <span className="sidebar-header-actions">
+          <Button
+            size="small"
+            variant="minimal"
+            icon="plus"
+            onClick={startAdd}
+            aria-label="Add connection"
+            title="Add connection"
+          />
+          <Button
+            size="small"
+            variant="minimal"
+            icon="cog"
+            onClick={() => setSettingsOpen(true)}
+            aria-label="Settings"
+            title="Settings"
+          />
+        </span>
       </div>
 
-      <div>
-        {configs.length === 0 && <div>No connections found.</div>}
+      <div className="sidebar-list">
+        {configs.length === 0 && (
+          <div className="sidebar-empty">
+            No connections yet.
+            <br />
+            Add one with the + button.
+          </div>
+        )}
         {configs.map((config) => (
           <ConnectionRow
             key={config.id}
@@ -56,6 +78,8 @@ export function Sidebar() {
           onCancel={() => setEditing(null)}
         />
       )}
+
+      {settingsOpen && <SettingsDialog onClose={() => setSettingsOpen(false)} />}
     </aside>
   );
 }

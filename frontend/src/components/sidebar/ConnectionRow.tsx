@@ -1,17 +1,8 @@
+import { Button } from "@blueprintjs/core";
 import { useConnectionsStore } from "../../stores/connectionsStore";
 import { useLayoutStore } from "../../stores/layoutStore";
 import { focusPanel } from "../dock/dockApi";
 import type { ConnectionConfig } from "../../ipc/types";
-import { DeleteIcon, PenIcon } from "lucide-react";
-import { Button, Tooltip } from "@blueprintjs/core";
-
-// const STATUS_DOT: Record<string, string> = {
-//   connected: "bg-[#4ec9b0]",
-//   connecting: "bg-[#cca700]",
-//   reconnecting: "bg-[#cca700]",
-//   error: "bg-[#f14c4c]",
-//   disconnected: "bg-[#969696]",
-// };
 
 export function ConnectionRow({
   config,
@@ -40,6 +31,9 @@ export function ConnectionRow({
     }
   };
 
+  // Re-open (or focus) this connection's panel. Fixes the case where the panel
+  // was closed via its tab X — without this there's no way back short of a
+  // reconnect. Focus if already open; otherwise add it back to the dock.
   const showPanel = () => {
     if (!focusPanel(config.id)) {
       useLayoutStore.getState().openPanel(config.id);
@@ -53,31 +47,38 @@ export function ConnectionRow({
   };
 
   return (
-    <div>
-      <Tooltip content={error ?? status}>
-        <span />
-      </Tooltip>
-
+    <div className={`conn-row conn-row-${status}`} title={error ?? undefined}>
+      <span className={`status-dot status-${status}`} title={error ?? status} />
       <div
+        className="conn-row-main"
         onClick={showPanel}
         onDoubleClick={onEdit}
         title="Click to show panel · double-click to edit"
       >
-        <div>{config.name || config.host}</div>
-        <div>
+        <div className="conn-row-name">{config.name || config.host}</div>
+        <div className="conn-row-sub">
           {config.protocol}://{config.host}:{config.port}
           {error ? ` — ${error}` : ""}
         </div>
       </div>
-
-      <div>
-        <Button onClick={toggle}>{isActive ? "Disconnect" : "Connect"}</Button>
-        <Button onClick={onEdit} aria-label="Edit">
-          <PenIcon /> Edit
+      <div className="conn-row-actions">
+        <Button size="small" onClick={toggle}>
+          {isActive ? "Disconnect" : "Connect"}
         </Button>
-        <Button onClick={confirmDelete} aria-label="Delete">
-          <DeleteIcon /> Delete
-        </Button>
+        <Button
+          size="small"
+          icon="edit"
+          onClick={onEdit}
+          aria-label="Edit"
+          title="Edit"
+        />
+        <Button
+          size="small"
+          icon="trash"
+          onClick={confirmDelete}
+          aria-label="Delete"
+          title="Delete"
+        />
       </div>
     </div>
   );

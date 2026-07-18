@@ -19,6 +19,8 @@ export function LoadConnections():Promise<Array<mqtt.ConnectionConfig>>;
 
 export function LoadLayout():Promise<main.StoredLayout>;
 
+export function LoadSettings():Promise<main.AppSettings>;
+
 export function OpenFilePicker():Promise<string>;
 
 export function Publish(arg1:string,arg2:string,arg3:string,arg4:number,arg5:boolean):Promise<void>;
@@ -26,6 +28,8 @@ export function Publish(arg1:string,arg2:string,arg3:string,arg4:number,arg5:boo
 export function SaveConnections(arg1:Array<mqtt.ConnectionConfig>):Promise<void>;
 
 export function SaveLayout(arg1:main.StoredLayout):Promise<void>;
+
+export function SaveSettings(arg1:main.AppSettings):Promise<void>;
 
 export function UnwatchTopic(arg1:string):Promise<void>;
 

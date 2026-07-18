@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
+import { Classes } from "@blueprintjs/core";
+import { Group, Panel, Separator } from "react-resizable-panels";
 import { Sidebar } from "./components/sidebar/Sidebar";
 import { DockArea } from "./components/dock/DockArea";
 import { MinimizedStrip } from "./components/dock/MinimizedStrip";
 import { initIpc } from "./ipc/wire";
 import { useConnectionsStore } from "./stores/connectionsStore";
 import { useLayoutStore } from "./stores/layoutStore";
-import { Group, Panel } from "react-resizable-panels";
+import { useSettingsStore } from "./stores/settingsStore";
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -15,10 +17,12 @@ export default function App() {
     (async () => {
       try {
         initIpc();
+        await useSettingsStore.getState().load();
         await useConnectionsStore.getState().load();
         await useLayoutStore.getState().load();
         if (cancelled) return;
 
+        // Auto-connect flagged connections once everything is wired.
         const { configs, connect } = useConnectionsStore.getState();
         for (const config of configs) {
           if (config.connectOnStartup) {
@@ -38,19 +42,28 @@ export default function App() {
   }, []);
 
   if (!ready) {
-    return <div>Loading…</div>;
+    return <div className={`app-loading ${Classes.DARK}`}>Loading…</div>;
   }
 
   return (
-    <Group>
-      <Panel maxSize={300} minSize={200} defaultSize={250}>
-        <Sidebar />
-      </Panel>
-
-      <Panel>
-        <DockArea />
-        <MinimizedStrip />
-      </Panel>
-    </Group>
+    <div className={`app ${Classes.DARK}`}>
+      <Group className="app-split">
+        <Panel
+          className="sidebar-panel"
+          minSize={180}
+          maxSize={340}
+          defaultSize={260}
+        >
+          <Sidebar />
+        </Panel>
+        <Separator className="app-separator" />
+        <Panel className="main-panel">
+          <main className="main-area">
+            <DockArea />
+            <MinimizedStrip />
+          </main>
+        </Panel>
+      </Group>
+    </div>
   );
 }

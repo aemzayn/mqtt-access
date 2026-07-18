@@ -5,7 +5,7 @@ import { getMirror, useMirrorVersion } from "../../stores/treeMirror";
 import { useSelectionStore } from "../../stores/selectionStore";
 import { getTreeSnapshot } from "../../ipc/commands";
 import { TreeRow, ROW_HEIGHT } from "./TreeRow";
-import { FormGroup, InputGroup } from "@blueprintjs/core";
+import { InputGroup } from "@blueprintjs/core";
 
 export function TopicTree({ connectionId }: { connectionId: string }) {
   const version = useMirrorVersion(connectionId);
@@ -53,20 +53,19 @@ export function TopicTree({ connectionId }: { connectionId: string }) {
   };
 
   return (
-    <div>
-      <div>
-        <FormGroup label="Filter topics" labelFor="topic-filter" inline>
-          <InputGroup
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            placeholder="Filter topics…"
-          />
-        </FormGroup>
-      </div>
+    <div className="topic-tree">
+      <InputGroup
+        size="small"
+        className="tree-filter"
+        leftIcon="filter"
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+        placeholder="Filter topics…"
+      />
 
-      <div ref={parentRef}>
+      <div className="tree-scroll" ref={parentRef}>
         {rows.length === 0 && (
-          <div>
+          <div className="tree-empty">
             {filter ? "No topics match the filter." : "Waiting for messages…"}
           </div>
         )}

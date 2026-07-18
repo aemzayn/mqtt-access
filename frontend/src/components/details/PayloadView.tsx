@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Checkbox } from "@blueprintjs/core";
 import type { MessageRecord } from "../../ipc/types";
 import { tryPrettyJson } from "../../lib/json";
 import { b64ByteLength } from "../../lib/b64";
@@ -29,14 +30,13 @@ export function PayloadView({ message }: { message: MessageRecord | null }) {
     <div className="payload-view">
       <PayloadMeta message={message} />
       {pretty !== null && (
-        <label className="form-check payload-toggle">
-          <input
-            type="checkbox"
-            checked={raw}
-            onChange={(e) => setRaw(e.target.checked)}
-          />
+        <Checkbox
+          className="payload-toggle"
+          checked={raw}
+          onChange={(e) => setRaw(e.target.checked)}
+        >
           Show raw
-        </label>
+        </Checkbox>
       )}
       <pre className="payload-text">
         {showPretty ? pretty : message.payloadUtf8}

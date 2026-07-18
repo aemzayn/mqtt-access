@@ -34,6 +34,10 @@ export function LoadLayout() {
   return window['go']['main']['App']['LoadLayout']();
 }
 
+export function LoadSettings() {
+  return window['go']['main']['App']['LoadSettings']();
+}
+
 export function OpenFilePicker() {
   return window['go']['main']['App']['OpenFilePicker']();
 }
@@ -48,6 +52,10 @@ export function SaveConnections(arg1) {
 
 export function SaveLayout(arg1) {
   return window['go']['main']['App']['SaveLayout'](arg1);
+}
+
+export function SaveSettings(arg1) {
+  return window['go']['main']['App']['SaveSettings'](arg1);
 }
 
 export function UnwatchTopic(arg1) {

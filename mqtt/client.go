@@ -61,6 +61,9 @@ func NewConnection(wailsCtx context.Context, config ConnectionConfig) (*Connecti
 	}
 
 	opts.SetOnConnectHandler(func(c pahomqtt.Client) {
+		if !handle.IsActive() {
+			return
+		}
 		runtime.EventsEmit(wailsCtx, EventStatus, StatusEvent{
 			ConnectionID: config.ID,
 			Status:       StatusConnected,
@@ -84,6 +87,9 @@ func NewConnection(wailsCtx context.Context, config ConnectionConfig) (*Connecti
 	})
 
 	opts.SetConnectionLostHandler(func(_ pahomqtt.Client, err error) {
+		if !handle.IsActive() {
+			return
+		}
 		errStr := err.Error()
 		runtime.EventsEmit(wailsCtx, EventStatus, StatusEvent{
 			ConnectionID: config.ID,
