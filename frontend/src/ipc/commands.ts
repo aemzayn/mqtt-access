@@ -23,6 +23,9 @@ export interface StoredLayout {
 export const connect = (config: ConnectionConfig) =>
   call<void>("Connect", config)
 
+export const testConnection = (config: ConnectionConfig) =>
+  call<void>("TestConnection", config)
+
 export const disconnect = (connectionId: string) =>
   call<void>("Disconnect", connectionId)
 

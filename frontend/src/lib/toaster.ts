@@ -12,3 +12,7 @@ const toaster = OverlayToaster.createAsync(
 export async function showErrorToast(message: string) {
   ;(await toaster).show({ message, intent: "danger", timeout: 6000 })
 }
+
+export async function showSuccessToast(message: string) {
+  ;(await toaster).show({ message, intent: "success", timeout: 4000 })
+}

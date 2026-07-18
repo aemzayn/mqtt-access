@@ -13,12 +13,77 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-// NewConnection spawns a client task. A non-nil store (from a previous handle
-// for the same connection) is reused so reconnecting keeps the topic tree.
-func NewConnection(wailsCtx context.Context, config ConnectionConfig, store *TopicStore) (*ConnectionHandle, error) {
+const connectTimeout = 10 * time.Second
+
+// buildClientOptions builds the paho options shared by real connections and
+// connection tests: broker URL, auth, TLS, keepalive. No retry loop on the
+// initial connect — callers get a fast success/failure instead of a hang.
+func buildClientOptions(config ConnectionConfig) (*pahomqtt.ClientOptions, error) {
 	tlsCfg, err := buildTLSConfig(config)
 	if err != nil {
 		return nil, fmt.Errorf("TLS config: %w", err)
+	}
+
+	opts := pahomqtt.NewClientOptions()
+	opts.AddBroker(buildBrokerURL(config))
+	opts.SetClientID(resolveClientID(config.ClientID))
+	opts.SetCleanSession(config.CleanSession)
+	keepAlive := time.Duration(config.KeepAliveSecs) * time.Second
+	if keepAlive < 5*time.Second {
+		keepAlive = 5 * time.Second
+	}
+	opts.SetKeepAlive(keepAlive)
+	opts.SetAutoReconnect(true)
+	opts.SetMaxReconnectInterval(30 * time.Second)
+	opts.SetConnectRetry(false)
+	opts.SetConnectTimeout(connectTimeout)
+	opts.SetResumeSubs(false)
+
+	if tlsCfg != nil {
+		opts.SetTLSConfig(tlsCfg)
+	}
+
+	if config.Username != nil && *config.Username != "" {
+		password := ""
+		if config.Password != nil {
+			password = *config.Password
+		}
+		opts.SetUsername(*config.Username)
+		opts.SetPassword(password)
+	}
+
+	return opts, nil
+}
+
+// TestConnection dials the broker with the given config and reports whether
+// the connection succeeds, without touching any connection state. It always
+// disconnects again before returning, so it never leaves a handle running.
+func TestConnection(config ConnectionConfig) error {
+	opts, err := buildClientOptions(config)
+	if err != nil {
+		return err
+	}
+	opts.SetAutoReconnect(false)
+
+	client := pahomqtt.NewClient(opts)
+	token := client.Connect()
+	if !token.WaitTimeout(connectTimeout + 2*time.Second) {
+		client.Disconnect(0)
+		return fmt.Errorf("connect timed out")
+	}
+	if err := token.Error(); err != nil {
+		return err
+	}
+	client.Disconnect(200)
+	return nil
+}
+
+// NewConnection spawns a client task. A non-nil store (from a previous handle
+// for the same connection) is reused so reconnecting keeps the topic tree.
+func NewConnection(wailsCtx context.Context, config ConnectionConfig, store *TopicStore) (*ConnectionHandle, error) {
+	opts, err := buildClientOptions(config)
+	if err != nil {
+		return nil, err
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -34,38 +99,6 @@ func NewConnection(wailsCtx context.Context, config ConnectionConfig, store *Top
 		dirty:  dirty,
 		ctx:    ctx,
 		cancel: cancel,
-	}
-
-	clientID := resolveClientID(config.ClientID)
-
-	opts := pahomqtt.NewClientOptions()
-	opts.AddBroker(buildBrokerURL(config))
-	opts.SetClientID(clientID)
-	opts.SetCleanSession(config.CleanSession)
-	keepAlive := time.Duration(config.KeepAliveSecs) * time.Second
-	if keepAlive < 5*time.Second {
-		keepAlive = 5 * time.Second
-	}
-	opts.SetKeepAlive(keepAlive)
-	opts.SetAutoReconnect(true)
-	opts.SetMaxReconnectInterval(30 * time.Second)
-	// No retry loop on the initial connect: fail fast so the UI can tell the
-	// user the attempt failed. AutoReconnect still covers drops afterwards.
-	opts.SetConnectRetry(false)
-	opts.SetConnectTimeout(10 * time.Second)
-	opts.SetResumeSubs(false)
-
-	if tlsCfg != nil {
-		opts.SetTLSConfig(tlsCfg)
-	}
-
-	if config.Username != nil && *config.Username != "" {
-		password := ""
-		if config.Password != nil {
-			password = *config.Password
-		}
-		opts.SetUsername(*config.Username)
-		opts.SetPassword(password)
 	}
 
 	opts.SetOnConnectHandler(func(c pahomqtt.Client) {

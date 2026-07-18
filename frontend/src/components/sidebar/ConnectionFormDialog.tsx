@@ -10,8 +10,9 @@ import {
   HTMLSelect,
   InputGroup,
 } from "@blueprintjs/core"
-import { openFilePicker } from "../../ipc/commands"
+import { openFilePicker, testConnection } from "../../ipc/commands"
 import { useT } from "../../i18n"
+import { showErrorToast, showSuccessToast } from "../../lib/toaster"
 import type { ConnectionConfig, Protocol, Subscription } from "../../ipc/types"
 
 const DEFAULT_PORTS: Record<Protocol, number> = {
@@ -42,6 +43,7 @@ export function ConnectionFormDialog({
     ...initial,
     clientId: initial.clientId ?? generateRandomClientId(),
   })
+  const [testing, setTesting] = useState(false)
 
   const patch = (p: Partial<ConnectionConfig>) =>
     setConfig(c => ({ ...c, ...p }))
@@ -87,6 +89,21 @@ export function ConnectionFormDialog({
       name: config.name.trim() || config.host,
       subscriptions: config.subscriptions.filter(s => s.topic.trim() !== ""),
     })
+  }
+
+  // Dials the broker with the current form values without saving anything —
+  // saving stays possible even if this fails, the test is purely informational.
+  const runTest = async () => {
+    if (!config.host.trim() || testing) return
+    setTesting(true)
+    try {
+      await testConnection({ ...config, name: config.name.trim() || config.host })
+      showSuccessToast(t("testConnectionSuccess"))
+    } catch (err) {
+      showErrorToast(t("testConnectionFailed", { error: String(err) }))
+    } finally {
+      setTesting(false)
+    }
   }
 
   return (
@@ -370,7 +387,17 @@ export function ConnectionFormDialog({
               </Button>
             </>
           }
-        />
+        >
+          <Button
+            type="button"
+            icon="pulse"
+            loading={testing}
+            disabled={!config.host.trim()}
+            onClick={runTest}
+          >
+            {testing ? t("testingConnection") : t("testConnection")}
+          </Button>
+        </DialogFooter>
       </form>
     </Dialog>
   )

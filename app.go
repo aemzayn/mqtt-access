@@ -71,6 +71,16 @@ func (a *App) Connect(config mqttpkg.ConnectionConfig) error {
 	return nil
 }
 
+// TestConnection dials the broker with the given config and reports success
+// or failure. It never registers a live handle, so it can't collide with an
+// existing connection (even one being edited) and never touches saved data.
+func (a *App) TestConnection(config mqttpkg.ConnectionConfig) error {
+	if config.Host == "" {
+		return fmt.Errorf("host must not be empty")
+	}
+	return mqttpkg.TestConnection(config)
+}
+
 func (a *App) Disconnect(connectionID string) error {
 	handle, err := a.getHandle(connectionID)
 	if err != nil {

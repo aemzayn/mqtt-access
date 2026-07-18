@@ -31,6 +31,8 @@ export function SaveLayout(arg1:main.StoredLayout):Promise<void>;
 
 export function SaveSettings(arg1:main.AppSettings):Promise<void>;
 
+export function TestConnection(arg1:mqtt.ConnectionConfig):Promise<void>;
+
 export function UnwatchTopic(arg1:string):Promise<void>;
 
 export function WatchTopic(arg1:string,arg2:string):Promise<void>;

@@ -58,6 +58,10 @@ export function SaveSettings(arg1) {
   return window['go']['main']['App']['SaveSettings'](arg1);
 }
 
+export function TestConnection(arg1) {
+  return window['go']['main']['App']['TestConnection'](arg1);
+}
+
 export function UnwatchTopic(arg1) {
   return window['go']['main']['App']['UnwatchTopic'](arg1);
 }
