@@ -15,14 +15,10 @@ export const TreeRow = memo(
   function TreeRow({ row, selected, onToggle, onSelect }: TreeRowProps) {
     return (
       <div
-        className={`flex items-center h-[22px] whitespace-nowrap overflow-hidden cursor-pointer gap-[3px] ${
-          selected ? "bg-[#094771]" : "hover:bg-[#2a2d2e]"
-        }`}
         style={{ paddingLeft: row.depth * 14 + 4 }}
         onClick={() => onSelect(row.path)}
       >
         <span
-          className={`w-[14px] text-[#969696] text-center shrink-0 ${row.hasChildren ? "" : "invisible"}`}
           onClick={(e) => {
             e.stopPropagation();
             if (row.hasChildren) onToggle(row.path);
@@ -31,7 +27,7 @@ export const TreeRow = memo(
           {row.expanded ? "⌄" : "›"}
         </span>
 
-        <span className="font-normal text-[#cccccc]">{row.segment}</span>
+        <span>{row.segment}</span>
 
         {row.hasChildren && !row.expanded && (
           <Badge variant="count">{row.subtreeTopicCount}</Badge>
@@ -39,12 +35,7 @@ export const TreeRow = memo(
 
         {row.retain && row.hasMessage && <Badge variant="retain">R</Badge>}
 
-        {row.hasMessage && (
-          <span className="text-[#969696] overflow-hidden text-ellipsis text-[12px]">
-            {" "}
-            = {row.preview}
-          </span>
-        )}
+        {row.hasMessage && <span> = {row.preview}</span>}
       </div>
     );
   },

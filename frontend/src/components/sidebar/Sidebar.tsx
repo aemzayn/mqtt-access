@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { nanoid } from "nanoid";
-import { Button } from "@heroui/react";
 import { useConnectionsStore } from "../../stores/connectionsStore";
+import { Button } from "@blueprintjs/core";
 import { useLayoutStore } from "../../stores/layoutStore";
 import {
   defaultConnectionConfig,
@@ -28,20 +28,16 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="h-full w-full bg-taupe-900 border-r border-taupe-800 flex flex-col">
-      <div className="flex items-center justify-between px-3 py-2 shrink-0">
-        <span className="text-sm font-bold uppercase flex items-center gap-1 ">
-          Connections
-        </span>
-        <Button size="sm" onPress={startAdd} isIconOnly variant="ghost">
+    <aside>
+      <div>
+        <span>Connections</span>
+        <Button size="small" onClick={startAdd} variant="minimal">
           <PlusIcon />
         </Button>
       </div>
 
-      <div className="p-2 flex-1 overflow-y-auto border-taupe-800 border-t">
-        {configs.length === 0 && (
-          <div className="text-center mt-5">No connections found.</div>
-        )}
+      <div>
+        {configs.length === 0 && <div>No connections found.</div>}
         {configs.map((config) => (
           <ConnectionRow
             key={config.id}

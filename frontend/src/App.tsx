@@ -38,11 +38,7 @@ export default function App() {
   }, []);
 
   if (!ready) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-[#1e1e1e] text-[#969696] text-sm">
-        Loading…
-      </div>
-    );
+    return <div>Loading…</div>;
   }
 
   return (
@@ -51,7 +47,7 @@ export default function App() {
         <Sidebar />
       </Panel>
 
-      <Panel className="flex flex-col">
+      <Panel>
         <DockArea />
         <MinimizedStrip />
       </Panel>

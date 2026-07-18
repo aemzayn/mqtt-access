@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Input, Label, TextField } from "@heroui/react";
 import { flattenVisible } from "../../lib/topicMirror";
 import { getMirror, useMirrorVersion } from "../../stores/treeMirror";
 import { useSelectionStore } from "../../stores/selectionStore";
 import { getTreeSnapshot } from "../../ipc/commands";
 import { TreeRow, ROW_HEIGHT } from "./TreeRow";
+import { FormGroup, InputGroup } from "@blueprintjs/core";
 
 export function TopicTree({ connectionId }: { connectionId: string }) {
   const version = useMirrorVersion(connectionId);
@@ -53,16 +53,15 @@ export function TopicTree({ connectionId }: { connectionId: string }) {
   };
 
   return (
-    <div className="flex flex-col h-full min-h-0">
-      <div className="mx-1.5 my-1.5 shrink-0">
-        <TextField>
-          <Label htmlFor="topic-filter">Filter topics</Label>
-          <Input
+    <div>
+      <div>
+        <FormGroup label="Filter topics" labelFor="topic-filter" inline>
+          <InputGroup
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             placeholder="Filter topics…"
           />
-        </TextField>
+        </FormGroup>
       </div>
 
       <div ref={parentRef}>

@@ -1,5 +1,7 @@
 export type Protocol = "mqtt" | "mqtts" | "ws" | "wss";
 
+export type Qos = 0 | 1 | 2;
+
 export interface Subscription {
   topic: string;
   qos: number;
@@ -56,11 +58,7 @@ export interface TopicDetails {
 }
 
 export type ConnectionStatus =
-  | "connecting"
-  | "connected"
-  | "reconnecting"
-  | "disconnected"
-  | "error";
+  "connecting" | "connected" | "reconnecting" | "disconnected" | "error";
 
 export interface StatusEvent {
   connectionId: string;

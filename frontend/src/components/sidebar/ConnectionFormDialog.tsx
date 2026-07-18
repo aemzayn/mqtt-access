@@ -1,17 +1,21 @@
-import { useState } from "react";
-import {
-  Modal,
-  Button,
-  Input,
-  Select,
-  Checkbox,
-  Label,
-  TextField,
-  ListBox,
-} from "@heroui/react";
+import { JSX, useState } from "react";
 import { openFilePicker } from "../../ipc/commands";
-import type { ConnectionConfig, Protocol, Subscription } from "../../ipc/types";
-import { PlusIcon, RocketIcon, XIcon } from "lucide-react";
+import type {
+  ConnectionConfig,
+  Protocol,
+  Qos,
+  Subscription,
+} from "../../ipc/types";
+import { PlusIcon, XIcon } from "lucide-react";
+import {
+  Button,
+  Checkbox,
+  FormGroup,
+  InputGroup,
+  MenuItem,
+  NumericInput,
+} from "@blueprintjs/core";
+import { ItemRenderer, Select } from "@blueprintjs/select";
 
 const DEFAULT_PORTS: Record<Protocol, number> = {
   mqtt: 1883,
@@ -23,6 +27,49 @@ const DEFAULT_PORTS: Record<Protocol, number> = {
 const generateRandomClientId = () => {
   const randomString = Math.random().toString(36).substring(2, 10);
   return `mqtt-access-${randomString}`;
+};
+
+interface QosOption {
+  title: string;
+  value: Qos;
+}
+
+interface ProtocolOption {
+  title: string;
+  value: Protocol;
+}
+
+const QOS_OPTIONS: QosOption[] = [
+  { value: 0, title: "QoS 0" },
+  { value: 1, title: "QoS 1" },
+  { value: 2, title: "QoS 2" },
+];
+
+const PROTOCOL_OPTIONS: ProtocolOption[] = [
+  { value: "mqtt", title: "mqtt://" },
+  { value: "mqtts", title: "mqtts://" },
+  { value: "ws", title: "ws://" },
+  { value: "wss", title: "wss://" },
+];
+
+const renderOption = <T extends { value: string | number; title: string }>(
+  option: T,
+  { handleClick, handleFocus, modifiers }: any,
+): JSX.Element | null => {
+  if (!modifiers.matchesPredicate) {
+    return null;
+  }
+  return (
+    <MenuItem
+      active={modifiers.active}
+      disabled={modifiers.disabled}
+      key={option.value}
+      onClick={handleClick}
+      onFocus={handleFocus}
+      roleStructure="listoption"
+      text={option.title}
+    />
+  );
 };
 
 export function ConnectionFormDialog({
@@ -42,6 +89,7 @@ export function ConnectionFormDialog({
     clientId: initial.clientId ?? generateRandomClientId(),
     protocol: "mqtt",
   });
+
   const patch = (p: Partial<ConnectionConfig>) =>
     setConfig((c) => ({ ...c, ...p }));
 
@@ -91,336 +139,231 @@ export function ConnectionFormDialog({
   const headerLabel = isNew ? "Add connection" : "Edit connection";
 
   return (
-    <Modal isOpen onOpenChange={(isOpen) => !isOpen && onCancel()} defaultOpen>
-      <Modal.Backdrop>
-        <Modal.Container>
-          <Modal.Dialog className="bg-neutral-900">
-            <Modal.CloseTrigger />
-            <Modal.Header>
-              <Modal.Icon>
-                <RocketIcon />
-              </Modal.Icon>
-              <Modal.Heading>{headerLabel}</Modal.Heading>
-            </Modal.Header>
-            <Modal.Body>
-              <form onSubmit={submit} className="flex flex-col gap-1 ">
-                <TextField isRequired>
-                  <Label htmlFor="name">Name</Label>
-                  <Input
-                    id="name"
-                    value={config.name}
-                    onChange={(e) => patch({ name: e.target.value })}
-                    placeholder="My broker"
-                    autoFocus
-                    variant="primary"
-                    // classNames={{ inputWrapper: inputCls }}
-                  />
-                </TextField>
+    <form onSubmit={submit}>
+      <FormGroup label="Name" labelFor="name">
+        <InputGroup
+          id="name"
+          value={config.name}
+          onChange={(e) => patch({ name: e.target.value })}
+          placeholder="My broker"
+          autoFocus
+        />
+      </FormGroup>
 
-                <div className="flex gap-2 items-end">
-                  <Select
-                    value={config.protocol}
-                    onChange={(value) =>
-                      setProtocol((value ? value : "mqtt") as Protocol)
-                    }
-                  >
-                    <Label>Protocol</Label>
-                    <Select.Trigger>
-                      <Select.Value />
-                      <Select.Indicator />
-                    </Select.Trigger>
-                    <Select.Popover>
-                      <ListBox>
-                        <ListBox.Item key="mqtt">mqtt://</ListBox.Item>
-                        <ListBox.Item key="mqtts">mqtts://</ListBox.Item>
-                        <ListBox.Item key="ws">ws://</ListBox.Item>
-                        <ListBox.Item key="wss">wss://</ListBox.Item>
-                      </ListBox>
-                    </Select.Popover>
-                  </Select>
+      <div>
+        <Select<ProtocolOption>
+          itemRenderer={renderOption}
+          items={PROTOCOL_OPTIONS}
+          onItemSelect={(e) => setProtocol(e.value)}
+        >
+          <Button
+            text={
+              PROTOCOL_OPTIONS.find((p) => p.value === config.protocol)?.title
+            }
+            endIcon="double-caret-vertical"
+          />
+        </Select>
 
-                  <TextField
-                    //  className="flex flex-col gap-1"
-                    isRequired
-                  >
-                    <Label htmlFor="host">Host</Label>
-                    <Input
-                      id="host"
-                      value={config.host}
-                      onChange={(e) => patch({ host: e.target.value })}
-                      placeholder="broker.example.com"
-                      // className="flex-1"
-                      // classNames={{ inputWrapper: inputCls }}
-                    />
-                  </TextField>
+        <FormGroup label="Host" labelFor="host">
+          <InputGroup
+            required
+            id="host"
+            value={config.host}
+            onChange={(e) => patch({ host: e.target.value })}
+            placeholder="broker.example.com"
+          />
+        </FormGroup>
 
-                  <TextField>
-                    <Label htmlFor="port">Port</Label>
-                    <Input
-                      id="port"
-                      type="number"
-                      min={1}
-                      max={65535}
-                      value={String(config.port)}
-                      onChange={(e) => patch({ port: Number(e.target.value) })}
-                      // className="w-[90px] shrink-0"
-                      // classNames={{ inputWrapper: inputCls }}
-                    />
-                  </TextField>
-                </div>
+        <FormGroup label="Port" labelFor="port">
+          <NumericInput
+            id="port"
+            type="number"
+            min={1}
+            max={65535}
+            value={config.port}
+            onChange={(e) => patch({ port: Number(e.target.value) })}
+          />
+        </FormGroup>
+      </div>
 
-                {isWs && (
-                  <TextField>
-                    <Label htmlFor="port">WebSocket path</Label>
-                    <Input
-                      value={config.wsPath ?? ""}
-                      onChange={(e) =>
-                        patch({ wsPath: e.target.value || null })
-                      }
-                      placeholder="/mqtt"
-                      // classNames={{ inputWrapper: inputCls }}
-                    />
-                  </TextField>
-                )}
+      {isWs && (
+        <FormGroup label="WebSocket path" labelFor="wsPath">
+          <InputGroup
+            id="wsPath"
+            value={config.wsPath ?? ""}
+            onChange={(e) => patch({ wsPath: e.target.value || null })}
+            placeholder="/mqtt"
+          />
+        </FormGroup>
+      )}
 
-                <div className="flex gap-2">
-                  <TextField>
-                    <Label htmlFor="username">Username</Label>
-                    <Input
-                      value={config.username ?? ""}
-                      onChange={(e) =>
-                        patch({ username: e.target.value || null })
-                      }
-                      autoComplete="off"
-                      // className="flex-1"
-                      // classNames={{ inputWrapper: inputCls }}
-                    />
-                  </TextField>
-                  <TextField type="password">
-                    <Label htmlFor="password">Password</Label>
-                    <Input
-                      type="password"
-                      value={config.password ?? ""}
-                      onChange={(e) =>
-                        patch({ password: e.target.value || null })
-                      }
-                      autoComplete="new-password"
-                      // className="flex-1"
-                      // classNames={{ inputWrapper: inputCls }}
-                    />
-                  </TextField>
-                </div>
+      <div>
+        <FormGroup label="Username" labelFor="username">
+          <InputGroup
+            value={config.username ?? ""}
+            onChange={(e) => patch({ username: e.target.value || null })}
+            autoComplete="off"
+          />
+        </FormGroup>
 
-                <div className="flex gap-2">
-                  <TextField>
-                    <Label htmlFor="clientId">Client ID</Label>
-                    <Input
-                      placeholder="blank = random"
-                      value={config.clientId ?? ""}
-                      onChange={(e) =>
-                        patch({ clientId: e.target.value || null })
-                      }
-                      // className="flex-1"
-                      // classNames={{
-                      //   inputWrapper: inputCls,
-                      //   description: "text-[#6e7681]",
-                      // }}
-                    />
-                  </TextField>
-                  <TextField type="number">
-                    <Label htmlFor="keepalive">Keepalive (s)</Label>
-                    <Input
-                      type="number"
-                      min={5}
-                      value={String(config.keepAliveSecs)}
-                      onChange={(e) =>
-                        patch({ keepAliveSecs: e.target.valueAsNumber })
-                      }
-                      // className="w-[110px] shrink-0"
-                      // classNames={{ inputWrapper: inputCls }}
-                    />
-                  </TextField>
+        <FormGroup label="Password" labelFor="password">
+          <InputGroup
+            id="password"
+            placeholder="blank = none"
+            type="password"
+            value={config.password ?? ""}
+            onChange={(e) => patch({ password: e.target.value || null })}
+            autoComplete="new-password"
+          />
+        </FormGroup>
+      </div>
 
-                  <TextField type="number">
-                    <Label htmlFor="historyLimit">History/topic</Label>
-                    <Input
-                      type="number"
-                      min={1}
-                      max={100000}
-                      value={String(config.historyLimit)}
-                      onChange={(e) =>
-                        patch({ historyLimit: e.target.valueAsNumber })
-                      }
-                      // variant="outline"
-                      // className="w-[110px] shrink-0"
-                      // classNames={{ inputWrapper: inputCls }}
-                    />
-                  </TextField>
-                </div>
+      <div>
+        <FormGroup label="Client ID" labelFor="clientId">
+          <InputGroup
+            id="clientId"
+            placeholder="blank = random"
+            value={config.clientId ?? ""}
+            onChange={(e) => patch({ clientId: e.target.value || null })}
+          />
+        </FormGroup>
 
-                {/* Subscriptions */}
-                <div className="border border-[#3c3c3c] rounded-lg p-3 flex flex-col gap-2">
-                  <span className="text-[11px] text-[#969696]">
-                    Subscriptions
-                  </span>
-                  {config.subscriptions.map((sub, i) => (
-                    <div key={i} className="flex gap-2 items-center">
-                      <TextField>
-                        <Input
-                          value={sub.topic}
-                          onChange={(e) =>
-                            setSubscription(i, { topic: e.target.value })
-                          }
-                          placeholder="topic/filter/#"
-                          // variant="outline"
-                          // className="flex-1"
-                          // classNames={{ inputWrapper: inputCls }}
-                        />
-                      </TextField>
+        <FormGroup label="Keepalive (s)" labelFor="keepalive">
+          <NumericInput
+            min={5}
+            type="number"
+            value={config.keepAliveSecs}
+            onChange={(e) => patch({ keepAliveSecs: e.target.valueAsNumber })}
+          />
+        </FormGroup>
 
-                      <Select
-                        onChange={(value) =>
-                          setSubscription(i, { qos: Number(value) })
-                        }
-                        aria-label="QoS"
-                      >
-                        <Label>QoS</Label>
-                        <Select.Trigger>
-                          <Select.Value />
-                          <Select.Indicator />
-                        </Select.Trigger>
-                        <Select.Popover>
-                          <ListBox>
-                            <ListBox.Item key="0">QoS 0</ListBox.Item>
-                            <ListBox.Item key="1">QoS 1</ListBox.Item>
-                            <ListBox.Item key="2">QoS 2</ListBox.Item>
-                          </ListBox>
-                        </Select.Popover>
-                      </Select>
+        <FormGroup label="History/topic" labelFor="historyLimit">
+          <InputGroup
+            type="number"
+            min={1}
+            max={100000}
+            value={String(config.historyLimit)}
+            onChange={(e) => patch({ historyLimit: e.target.valueAsNumber })}
+          />
+        </FormGroup>
+      </div>
 
-                      <Button
-                        variant="ghost"
-                        isIconOnly
-                        onPress={() =>
-                          patch({
-                            subscriptions: config.subscriptions.filter(
-                              (_, j) => j !== i,
-                            ),
-                          })
-                        }
-                      >
-                        <XIcon />
-                      </Button>
-                    </div>
-                  ))}
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onPress={() =>
-                      patch({
-                        subscriptions: [
-                          ...config.subscriptions,
-                          { topic: "", qos: 0 },
-                        ],
-                      })
-                    }
-                  >
-                    <PlusIcon />
-                    Add subscription
-                  </Button>
-                </div>
+      {/* Subscriptions */}
+      <div>
+        <span>Subscriptions</span>
+        {config.subscriptions.map((sub, i) => (
+          <div key={i}>
+            <InputGroup
+              value={sub.topic}
+              onChange={(e) => setSubscription(i, { topic: e.target.value })}
+              placeholder="topic/filter/#"
+            />
 
-                {/* TLS */}
-                {isTls && (
-                  <div className="border border-[#3c3c3c] rounded-lg p-3 flex flex-col gap-2">
-                    <span className="text-[11px] text-[#969696]">TLS</span>
-                    <FilePickerRow
-                      label="CA certificate"
-                      value={config.tls?.caCertPath ?? null}
-                      onPick={() => pickFile("caCertPath")}
-                      onClear={() =>
-                        patch({
-                          tls: {
-                            allowInvalidCerts: false,
-                            ...config.tls,
-                            caCertPath: null,
-                          },
-                        })
-                      }
-                    />
-                    <FilePickerRow
-                      label="Client certificate"
-                      value={config.tls?.clientCertPath ?? null}
-                      onPick={() => pickFile("clientCertPath")}
-                      onClear={() =>
-                        patch({
-                          tls: {
-                            allowInvalidCerts: false,
-                            ...config.tls,
-                            clientCertPath: null,
-                          },
-                        })
-                      }
-                    />
-                    <FilePickerRow
-                      label="Client key"
-                      value={config.tls?.clientKeyPath ?? null}
-                      onPick={() => pickFile("clientKeyPath")}
-                      onClear={() =>
-                        patch({
-                          tls: {
-                            allowInvalidCerts: false,
-                            ...config.tls,
-                            clientKeyPath: null,
-                          },
-                        })
-                      }
-                    />
-                    <Checkbox
-                      isSelected={config.tls?.allowInvalidCerts ?? false}
-                      onChange={(v) =>
-                        patch({
-                          tls: { ...config.tls, allowInvalidCerts: v },
-                        })
-                      }
-                      // size="sm"
-                      // classNames={{ label: "text-[13px] text-[#cccccc]" }}
-                    >
-                      Allow invalid / self-signed certificates
-                    </Checkbox>
-                  </div>
-                )}
+            <Select<QosOption>
+              items={QOS_OPTIONS}
+              onItemSelect={(qos) => setSubscription(i, { qos: qos.value })}
+              itemRenderer={renderOption}
+            >
+              <Button text={`QoS ${sub.qos}`} endIcon="double-caret-vertical" />
+            </Select>
 
-                <Checkbox
-                  isSelected={config.connectOnStartup}
-                  onChange={(v) => patch({ connectOnStartup: v })}
-                  name="connectOnStartup"
-                  // size="sm"
-                  // classNames={{ label: "text-[13px] text-[#cccccc]" }}
-                >
-                  <Checkbox.Content>
-                    <Checkbox.Control>
-                      <Checkbox.Indicator />
-                    </Checkbox.Control>
-                    Connect on startup
-                  </Checkbox.Content>
-                </Checkbox>
-              </form>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button
-                // variant="outline"
-                onPress={onCancel}
-                className="bg-[#2d2d2d] text-[#cccccc]"
-              >
-                Cancel
-              </Button>
-              <Button type="submit">Save</Button>
-            </Modal.Footer>
-          </Modal.Dialog>
-        </Modal.Container>
-      </Modal.Backdrop>
-    </Modal>
+            <Button
+              onClick={() =>
+                patch({
+                  subscriptions: config.subscriptions.filter((_, j) => j !== i),
+                })
+              }
+            >
+              <XIcon />
+            </Button>
+          </div>
+        ))}
+        <Button
+          onClick={() =>
+            patch({
+              subscriptions: [...config.subscriptions, { topic: "", qos: 0 }],
+            })
+          }
+        >
+          <PlusIcon />
+          Add subscription
+        </Button>
+      </div>
+
+      {/* TLS */}
+      {isTls && (
+        <div>
+          <span>TLS</span>
+          <FilePickerRow
+            label="CA certificate"
+            value={config.tls?.caCertPath ?? null}
+            onPick={() => pickFile("caCertPath")}
+            onClear={() =>
+              patch({
+                tls: {
+                  allowInvalidCerts: false,
+                  ...config.tls,
+                  caCertPath: null,
+                },
+              })
+            }
+          />
+          <FilePickerRow
+            label="Client certificate"
+            value={config.tls?.clientCertPath ?? null}
+            onPick={() => pickFile("clientCertPath")}
+            onClear={() =>
+              patch({
+                tls: {
+                  allowInvalidCerts: false,
+                  ...config.tls,
+                  clientCertPath: null,
+                },
+              })
+            }
+          />
+          <FilePickerRow
+            label="Client key"
+            value={config.tls?.clientKeyPath ?? null}
+            onPick={() => pickFile("clientKeyPath")}
+            onClear={() =>
+              patch({
+                tls: {
+                  allowInvalidCerts: false,
+                  ...config.tls,
+                  clientKeyPath: null,
+                },
+              })
+            }
+          />
+          <Checkbox
+            checked={config.tls?.allowInvalidCerts ?? false}
+            onChange={(e) =>
+              patch({
+                tls: { ...config.tls, allowInvalidCerts: e.target.checked },
+              })
+            }
+          >
+            Allow invalid / self-signed certificates
+          </Checkbox>
+        </div>
+      )}
+
+      {/* <Checkbox
+        isSelected={config.connectOnStartup}
+        onChange={(v) => patch({ connectOnStartup: v })}
+        name="connectOnStartup"
+        // size="sm"
+        // classNames={{ label: "text-[13px] text-[#cccccc]" }}
+      >
+        <Checkbox.Content>
+          <Checkbox.Control>
+            <Checkbox.Indicator />
+          </Checkbox.Control>
+          Connect on startup
+        </Checkbox.Content>
+      </Checkbox> */}
+    </form>
   );
 }
 
@@ -436,33 +379,15 @@ function FilePickerRow({
   onClear: () => void;
 }) {
   return (
-    <div className="flex items-center gap-2">
-      <span className="w-[130px] text-[12px] text-[#969696] shrink-0">
-        {label}
-      </span>
-      <span
-        className="flex-1 text-[12px] overflow-hidden text-ellipsis whitespace-nowrap text-[#cccccc]"
-        title={value ?? undefined}
-      >
+    <div>
+      <span>{label}</span>
+      <span title={value ?? undefined}>
         {value ? value.split(/[\\/]/).pop() : "(none)"}
       </span>
-      <Button
-        size="sm"
-        // variant="outline"
-        onPress={onPick}
-        className="bg-[#2d2d2d] text-[#cccccc] shrink-0"
-      >
-        Browse…
-      </Button>
+      <Button onClick={onPick}>Browse…</Button>
       {value && (
-        <Button
-          size="sm"
-          // variant="outline"
-          isIconOnly
-          onPress={onClear}
-          className="bg-[#2d2d2d] text-[#cccccc] shrink-0"
-        >
-          ✕
+        <Button onClick={onClear}>
+          <XIcon />
         </Button>
       )}
     </div>

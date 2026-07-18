@@ -26,7 +26,13 @@ export function PublishForm({
     if (!topic.trim()) return;
     setFeedback(null);
     try {
-      await publish(connectionId, topic.trim(), encodeUtf8ToB64(payload), qos, retain);
+      await publish(
+        connectionId,
+        topic.trim(),
+        encodeUtf8ToB64(payload),
+        qos,
+        retain,
+      );
       setFeedback("Published ✓");
       setTimeout(() => setFeedback(null), 2000);
     } catch (err) {
@@ -42,9 +48,7 @@ export function PublishForm({
         onClick={() => setOpen(!open)}
       >
         {open ? "▾" : "▸"} Publish
-        {feedback && (
-          <span className="publish-feedback"> {feedback}</span>
-        )}
+        {feedback && <span className="publish-feedback"> {feedback}</span>}
       </button>
       {open && (
         <form onSubmit={send} className="publish-body">
@@ -80,9 +84,7 @@ export function PublishForm({
               />
               Retain
             </label>
-            <button type="submit" className="btn btn-primary">
-              Publish
-            </button>
+            <button type="submit">Publish</button>
           </div>
         </form>
       )}

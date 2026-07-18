@@ -1,5 +1,4 @@
 import { useCallback, useRef, useState } from "react";
-import { Button, Tooltip } from "@heroui/react";
 import type { DockviewPanelApi } from "dockview-react";
 import { useConnectionsStore } from "../../stores/connectionsStore";
 import { useLayoutStore } from "../../stores/layoutStore";
@@ -11,6 +10,7 @@ import {
 import { clearConnectionData } from "../../ipc/commands";
 import { TopicTree } from "../tree/TopicTree";
 import { DetailsPane } from "../details/DetailsPane";
+import { Button, Classes, Tooltip } from "@blueprintjs/core";
 
 type ConnectionStatus =
   "connected" | "connecting" | "reconnecting" | "error" | "disconnected";
@@ -64,49 +64,21 @@ export function ConnectionPanel({
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#1e1e1e]">
-      {/* header */}
-      <div className="flex items-center gap-2 px-2.5 py-1 border-b border-[#3c3c3c] bg-[#1e1e1e] shrink-0">
-        <Tooltip>
-          <Tooltip.Content>{status}</Tooltip.Content>
-          <span
-            className={`w-2.5 h-2.5 rounded-full shrink-0 cursor-default ${STATUS_DOT[status] ?? "bg-[#969696]"}`}
-          />
+    <div>
+      <div>
+        <Tooltip content={status} className={Classes.TOOLTIP_INDICATOR}>
+          <span />
         </Tooltip>
-        <span className="font-semibold text-[12px] text-[#cccccc]">
-          {config?.name ?? connectionId}
-        </span>
-        <span className="text-[#969696] text-[11px] flex-1 text-right mr-1.5 whitespace-nowrap overflow-hidden">
+        <span>{config?.name ?? connectionId}</span>
+        <span>
           {mirror.totalTopics} topics · {mirror.totalMessages} msgs ·{" "}
           {mirror.messageRate.toFixed(mirror.messageRate < 10 ? 1 : 0)} msg/s
         </span>
-        <div className="flex gap-1 shrink-0">
+        <div>
+          <Button onClick={clearData}>Clear</Button>
+          <Button onClick={() => panelApi.maximize()}>Maximize</Button>
           <Button
-            size="sm"
-            variant="tertiary"
-            onPress={clearData}
-            // title="Clear collected data"
-            className="h-6 px-2 text-[11px] min-w-0 bg-[#2d2d2d] text-[#cccccc]"
-          >
-            Clear
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            isIconOnly
-            onPress={() => panelApi.maximize()}
-            // title="Maximize"
-            className="h-6 w-6 min-w-0 bg-[#2d2d2d] text-[#cccccc]"
-          >
-            Maximize
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            isIconOnly
-            onPress={() => useLayoutStore.getState().minimize(connectionId)}
-            // title="Minimize to strip"
-            className="h-6 w-6 min-w-0 bg-[#2d2d2d] text-[#cccccc]"
+            onClick={() => useLayoutStore.getState().minimize(connectionId)}
           >
             Minimize
           </Button>
@@ -114,18 +86,12 @@ export function ConnectionPanel({
       </div>
 
       {/* body */}
-      <div className="flex flex-1 min-h-0" ref={bodyRef}>
-        <div
-          className="flex flex-col min-w-0"
-          style={{ width: `${treeWidthPct}%` }}
-        >
+      <div ref={bodyRef}>
+        <div style={{ width: `${treeWidthPct}%` }}>
           <TopicTree connectionId={connectionId} />
         </div>
-        <div
-          className="w-1 cursor-col-resize bg-[#3c3c3c] hover:bg-[#007acc] shrink-0 transition-colors"
-          onPointerDown={startDrag}
-        />
-        <div className="flex flex-col flex-1 min-w-0">
+        <div onPointerDown={startDrag} />
+        <div>
           <DetailsPane connectionId={connectionId} />
         </div>
       </div>
