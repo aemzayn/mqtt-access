@@ -28,6 +28,9 @@ jobs:
       - name: Install Wails CLI
         run: go install github.com/wailsapp/wails/v2/cmd/wails@${{ env.WAILS_VERSION }}
 
+      - name: Install NSIS
+        run: choco install nsis -y
+
       - name: Set version
         run: |
           $version = "${env:GITHUB_REF_NAME}" -replace '^v',''
@@ -72,7 +75,7 @@ jobs:
       - name: Package artifacts
         run: |
           mkdir -p dist
-          ditto -c -k --sequesterRsrc --keepParent "build/bin/mqtt-access.app" "dist/mqtt-access-${VERSION}-macos-universal.zip"
+          ditto -c -k --sequesterRsrc --keepParent "build/bin/MQTT Access.app" "dist/mqtt-access-${VERSION}-macos-universal.zip"
 
       - uses: actions/upload-artifact@v4
         with:
