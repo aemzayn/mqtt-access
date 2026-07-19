@@ -3,7 +3,7 @@
 ## Supported Versions
 
 Security updates are currently provided for:
-- 0.1.x
+- 1.0.x
 
 Older versions may not receive fixes.
 
