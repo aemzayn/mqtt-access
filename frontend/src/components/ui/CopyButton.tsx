@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { Button } from "@blueprintjs/core"
+import { Button, Icon } from "@blueprintjs/core"
 import { copyText } from "../../lib/clipboard"
 
 export function CopyButton({
@@ -32,7 +32,7 @@ export function CopyButton({
     <Button
       size="small"
       variant="minimal"
-      icon={copied ? "tick" : "duplicate"}
+      icon={<Icon icon={copied ? "tick" : "duplicate"} size={11} />}
       onClick={copy}
       aria-label={title}
       title={title}

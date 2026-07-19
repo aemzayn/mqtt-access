@@ -188,7 +188,11 @@ function TextDiffPreview({
         <span
           key={i}
           className={
-            part.added ? "diff-added" : part.removed ? "diff-removed" : undefined
+            part.added
+              ? "diff-added"
+              : part.removed
+                ? "diff-removed"
+                : undefined
           }
         >
           <SyntaxText text={part.value} />
@@ -200,7 +204,11 @@ function TextDiffPreview({
 
 function TypeBadge({ type }: { type: PayloadType }) {
   const t = useT()
-  return <span className={`type-badge type-badge-${type}`}>{t(TYPE_LABEL[type])}</span>
+  return (
+    <span className={`type-badge type-badge-${type}`}>
+      {t(TYPE_LABEL[type])}
+    </span>
+  )
 }
 
 export function PayloadMeta({ message }: { message: MessageRecord }) {

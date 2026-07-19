@@ -5,10 +5,7 @@ import { encodeUtf8ToB64, hexToB64, isValidBase64 } from "../../lib/b64"
 import { prettyXml } from "../../lib/syntaxHighlight"
 import { useT } from "../../i18n"
 import { showErrorToast } from "../../lib/toaster"
-import {
-  HighlightedTextarea,
-  type EditorLanguage,
-} from "../ui/HighlightedTextarea"
+import { CodeEditor, type EditorLanguage } from "../ui/CodeEditor"
 
 type DataType = "plain" | "json" | "base64" | "hex" | "xml"
 
@@ -20,9 +17,9 @@ const DATA_TYPE_OPTIONS: { value: DataType; label: string }[] = [
   { value: "xml", label: "XML" },
 ]
 
-const DEFAULT_BODY_HEIGHT = 160
-const MIN_BODY_HEIGHT = 90
-const MAX_BODY_HEIGHT = 480
+const DEFAULT_BODY_HEIGHT = 280
+const MIN_BODY_HEIGHT = 140
+const MAX_BODY_HEIGHT = 640
 
 export function PublishForm({
   connectionId,
@@ -49,7 +46,9 @@ export function PublishForm({
       const startHeight = bodyHeight
       const move = (ev: PointerEvent) => {
         const next = startHeight + (startY - ev.clientY)
-        setBodyHeight(Math.min(MAX_BODY_HEIGHT, Math.max(MIN_BODY_HEIGHT, next)))
+        setBodyHeight(
+          Math.min(MAX_BODY_HEIGHT, Math.max(MIN_BODY_HEIGHT, next)),
+        )
       }
       const up = () => {
         window.removeEventListener("pointermove", move)
@@ -178,11 +177,10 @@ export function PublishForm({
               )}
             </div>
 
-            <HighlightedTextarea
+            <CodeEditor
               value={payload}
               onChange={setPayload}
               language={language}
-              rows={3}
               placeholder={t("payload")}
             />
 

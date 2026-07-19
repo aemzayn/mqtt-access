@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react"
 import uPlot from "uplot"
 import "uplot/dist/uPlot.min.css"
 import { useT } from "../../i18n"
+import { useSettingsStore } from "@/stores/settingsStore"
+import { ThemeName } from "@/ipc/commands"
 
 export interface ChartPoint {
   ts: number
@@ -16,6 +18,14 @@ function toSeriesData(points: ChartPoint[]): [number[], number[]] {
   return [windowed.map(p => p.ts / 1000), windowed.map(p => p.value)]
 }
 
+const STROKE_COLORS: Record<ThemeName, string> = {
+  dark: "#333",
+  light: "#eee",
+  dracula: "#333",
+  "dark-contrast": "#333",
+  "light-contrast": "#eee",
+}
+
 export function ValueChart({
   points,
   color,
@@ -28,6 +38,8 @@ export function ValueChart({
   const plotRef = useRef<uPlot | null>(null)
   const pointsRef = useRef(points)
   pointsRef.current = points
+  const theme = useSettingsStore(s => s.theme)
+  const strokeColor = STROKE_COLORS[theme]
 
   useEffect(() => {
     const container = containerRef.current
@@ -39,8 +51,8 @@ export function ValueChart({
         height: container.clientHeight || 240,
         scales: { x: { time: true } },
         axes: [
-          { stroke: "#9aa0a6", grid: { stroke: "#333" } },
-          { stroke: "#9aa0a6", grid: { stroke: "#333" } },
+          { stroke: "#9aa0a6", grid: { stroke: strokeColor } },
+          { stroke: "#9aa0a6", grid: { stroke: strokeColor } },
         ],
         series: [
           {},
@@ -74,7 +86,7 @@ export function ValueChart({
     }
     // uPlot has no runtime "change series color" API, so a color change
     // recreates the plot — re-seeded from pointsRef so it doesn't flash empty.
-  }, [color])
+  }, [color, strokeColor])
 
   useEffect(() => {
     plotRef.current?.setData(toSeriesData(points))
