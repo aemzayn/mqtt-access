@@ -8,6 +8,8 @@ styled with Blueprint 6.
 
 ![Preview](assets/preview.png)
 
+[Download](https://github.com/aemzayn/mqtt-access/releases)
+
 ## Features
 
 - Multiple concurrent broker connections, each in a resizable / draggable /
