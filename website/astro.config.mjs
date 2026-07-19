@@ -7,8 +7,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  // TODO: replace with the real production domain before deploying.
-  site: 'https://mqtt-access.app',
+  site: 'https://mqtt-access.com',
 
   vite: {
     plugins: [tailwindcss()]

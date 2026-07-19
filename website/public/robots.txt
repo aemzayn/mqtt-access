@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mqtt-access.app/sitemap-index.xml
+Sitemap: https://mqtt-access.com/sitemap-index.xml

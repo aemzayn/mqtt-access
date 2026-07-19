@@ -1,5 +1,5 @@
 export const REPO_URL = "https://github.com/aemzayn/mqtt-access";
-export const DOWNLOAD_URL = `${REPO_URL}/packages`;
+export const DOWNLOAD_URL = `${REPO_URL}/releases`;
 export const ISSUES_URL = `${REPO_URL}/issues`;
 export const SECURITY_ADVISORY_URL = `${REPO_URL}/security/advisories/new`;
 

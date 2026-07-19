@@ -25,7 +25,7 @@ npm run preview   # preview the production build
 
 ## Before deploying
 
-- `astro.config.mjs` has a placeholder `site` (`https://mqtt-access.app`) used
+- `astro.config.mjs` has a placeholder `site` (`https://mqtt-access.com`) used
   for canonical URLs and the sitemap — update it to the real domain.
 - `public/robots.txt` hardcodes the sitemap URL to the same placeholder domain
   — update it alongside `site`.
