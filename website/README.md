@@ -23,12 +23,14 @@ npm run preview   # preview the production build
 - `src/layouts/DocLayout.astro` — prose wrapper used by the legal markdown pages
 - `src/lib/site.ts` — repo URL, download link, site copy constants
 
-## Before deploying
+## Deployment
 
-- `astro.config.mjs` has a placeholder `site` (`https://mqtt-access.com`) used
-  for canonical URLs and the sitemap — update it to the real domain.
-- `public/robots.txt` hardcodes the sitemap URL to the same placeholder domain
-  — update it alongside `site`.
-- The download buttons link to the GitHub repo's `/packages` page as a
-  placeholder until real installers are published (see `DOWNLOAD_URL` in
-  `src/lib/site.ts`).
+Deployed to GitHub Pages at the custom domain `mqtt-access.com` by
+`.github/workflows/deploy-website.yml`, which runs on every push to `main`
+that touches `website/**` and publishes `website/dist`. `public/CNAME` tells
+Pages which domain to serve; point the domain's DNS at GitHub Pages
+(`aemzayn.github.io`) for it to resolve. `astro.config.mjs`'s `site` and
+`public/robots.txt`'s sitemap URL both assume this domain — update both
+together if it ever changes.
+
+The download buttons point at the GitHub repo's `/releases` page.
