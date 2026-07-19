@@ -1,0 +1,39 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-bg: #1e1e1e;
+  --color-bg-elevated: #252526;
+  --color-border: #333333;
+  --color-fg: #d4d4d4;
+  --color-fg-muted: #9d9d9d;
+  --color-accent: #4fc1ff;
+  --color-accent-2: #c586c0;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+  }
+}
+
+.prose-doc {
+  --tw-prose-body: theme(colors.zinc.300);
+  --tw-prose-headings: theme(colors.white);
+  --tw-prose-links: var(--color-accent);
+  --tw-prose-bold: theme(colors.white);
+  --tw-prose-bullets: theme(colors.zinc.600);
+  --tw-prose-hr: var(--color-border);
+  --tw-prose-code: theme(colors.zinc.200);
+  --tw-prose-quotes: theme(colors.zinc.400);
+  --tw-prose-quote-borders: var(--color-border);
+}

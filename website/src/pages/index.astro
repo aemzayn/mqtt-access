@@ -1,0 +1,194 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import {
+  DOWNLOAD_URL,
+  REPO_URL,
+  SITE_NAME,
+  SITE_DESCRIPTION,
+} from "../lib/site";
+
+const features: { title: string; description: string }[] = [
+  {
+    title: "Multiple brokers at once",
+    description:
+      "Connect to any number of brokers simultaneously, each in its own resizable, draggable, minimizable dock panel.",
+  },
+  {
+    title: "Live topic tree",
+    description:
+      "A virtualized, hierarchical topic tree with per-topic value previews, message counts, retained flags, and an activity blink you can turn off.",
+  },
+  {
+    title: "Value, History & Diff",
+    description:
+      "Syntax-highlighted payloads with type detection (JSON/Number/Boolean/String/Binary), full message history, and a diff mode that highlights exactly what changed.",
+  },
+  {
+    title: "Live trend charts",
+    description:
+      "Pin any numeric value — top-level or nested inside JSON — to a live chart. Trends persist across restarts with pause/resume, custom colors, and CSV export.",
+  },
+  {
+    title: "Publish panel",
+    description:
+      "Send messages as Plain, JSON, Base64, Hex, or XML with format validation, syntax highlighting, one-click prettify, QoS 0/1/2, and retain.",
+  },
+  {
+    title: "Test before you connect",
+    description:
+      "Dial a broker to verify credentials and reachability without saving or disturbing any existing connection.",
+  },
+  {
+    title: "Every transport, with TLS",
+    description:
+      "mqtt, mqtts, ws, and wss, with username/password auth, CA/client certs, and self-signed certificate support.",
+  },
+  {
+    title: "Themes, sizes & languages",
+    description:
+      "5 themes (Dark, Light, Dracula, and two high-contrast modes), 3 font sizes, and 8 languages including English, Türkçe, Bahasa Indonesia, 日本語, 中文, Español, Deutsch, and Français.",
+  },
+  {
+    title: "Persistent, local-first",
+    description:
+      "Connections, window layout, trends, and settings are saved locally. Message data stays in RAM with a bounded per-topic history — nothing leaves your machine unless you connect it to a broker.",
+  },
+];
+
+const jsonLd = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "MQTT Access",
+  operatingSystem: "Windows, macOS, Linux",
+  applicationCategory: "DeveloperApplication",
+  description: SITE_DESCRIPTION,
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  license: "https://opensource.org/licenses/MIT",
+  url: Astro.site,
+  downloadUrl: DOWNLOAD_URL,
+  codeRepository: REPO_URL,
+});
+---
+
+<BaseLayout title={SITE_NAME} description={SITE_DESCRIPTION} path="/">
+  <script type="application/ld+json" is:inline set:html={jsonLd} />
+
+  <!-- Hero -->
+  <section class="mx-auto max-w-5xl px-6 pt-16 pb-10 text-center sm:pt-24">
+    <img
+      src="/images/logo.png"
+      alt=""
+      width="56"
+      height="56"
+      class="mx-auto rounded-full"
+    />
+    <h1 class="mt-6 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+      {SITE_NAME}
+    </h1>
+    <p class="mx-auto mt-4 max-w-2xl text-balance text-lg text-fg-muted">
+      A fast, native desktop MQTT explorer. Connect to
+      <strong class="text-fg">multiple brokers simultaneously</strong>, watch
+      topics update live, chart numeric values over time, and publish
+      messages — all in one minimal, keyboard-friendly app.
+    </p>
+
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+      <a
+        href={DOWNLOAD_URL}
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-black transition-opacity hover:opacity-90"
+      >
+        Download
+      </a>
+      <a
+        href={REPO_URL}
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 rounded-md border border-border px-5 py-2.5 text-sm font-medium text-fg transition-colors hover:border-zinc-500 hover:text-white"
+      >
+        View on GitHub
+      </a>
+    </div>
+    <p class="mt-3 text-xs text-fg-muted">
+      Free &amp; open source, MIT licensed · Windows, macOS &amp; Linux
+    </p>
+
+    <div class="mt-14">
+      <img
+        src="/images/preview.png"
+        width="1536"
+        height="1030"
+        alt="MQTT Access showing two connected brokers, a live topic tree, JSON value diff view, and two live trend charts"
+        class="mx-auto rounded-lg border border-border shadow-2xl shadow-black/40"
+        loading="eager"
+      />
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="mx-auto max-w-5xl scroll-mt-20 px-6 py-20">
+    <h2 class="text-center text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+      Everything you need to explore a broker
+    </h2>
+    <p class="mx-auto mt-3 max-w-xl text-center text-fg-muted">
+      Built for developers who live in MQTT day to day.
+    </p>
+
+    <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        features.map((feature) => (
+          <div>
+            <h3 class="font-medium text-white">{feature.title}</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-fg-muted">
+              {feature.description}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Themes showcase -->
+  <section class="mx-auto max-w-5xl px-6 py-20">
+    <h2 class="text-center text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+      Five themes, your choice
+    </h2>
+    <p class="mx-auto mt-3 max-w-xl text-center text-fg-muted">
+      Dark, Light, Dracula, and two high-contrast modes — switch anytime from
+      Settings.
+    </p>
+    <div class="mt-12">
+      <img
+        src="/images/preview-dracula.png"
+        width="1536"
+        height="1030"
+        alt="MQTT Access using the Dracula theme"
+        class="mx-auto rounded-lg border border-border shadow-2xl shadow-black/40"
+        loading="lazy"
+      />
+    </div>
+  </section>
+
+  <!-- Download -->
+  <section id="download" class="mx-auto max-w-5xl scroll-mt-20 px-6 py-20 text-center">
+    <h2 class="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+      Get MQTT Access
+    </h2>
+    <p class="mx-auto mt-3 max-w-xl text-fg-muted">
+      Free and open source under the MIT License. Downloads are published as
+      GitHub release packages.
+    </p>
+    <div class="mt-8">
+      <a
+        href={DOWNLOAD_URL}
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 rounded-md bg-accent px-6 py-3 text-sm font-semibold text-black transition-opacity hover:opacity-90"
+      >
+        Download from GitHub
+      </a>
+    </div>
+  </section>
+</BaseLayout>

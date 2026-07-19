@@ -1,0 +1,42 @@
+---
+import { REPO_URL, ISSUES_URL, SITE_NAME } from "../lib/site";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-border">
+  <div class="mx-auto max-w-5xl px-6 py-10">
+    <div class="grid gap-8 sm:grid-cols-3">
+      <div>
+        <p class="font-semibold text-white">{SITE_NAME}</p>
+        <p class="mt-2 text-sm text-fg-muted">
+          Open-source desktop MQTT explorer, built with Wails and React.
+        </p>
+      </div>
+
+      <div>
+        <p class="text-sm font-medium text-white">Project</p>
+        <ul class="mt-2 space-y-2 text-sm text-fg-muted">
+          <li><a href={REPO_URL} class="hover:text-white">GitHub</a></li>
+          <li><a href={ISSUES_URL} class="hover:text-white">Report an issue</a></li>
+          <li><a href="/#download" class="hover:text-white">Download</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="text-sm font-medium text-white">Legal</p>
+        <ul class="mt-2 space-y-2 text-sm text-fg-muted">
+          <li><a href="/privacy" class="hover:text-white">Privacy Policy</a></li>
+          <li><a href="/security" class="hover:text-white">Security Policy</a></li>
+          <li><a href="/eula" class="hover:text-white">EULA</a></li>
+          <li><a href="/third-party-notices" class="hover:text-white">Third-Party Notices</a></li>
+          <li><a href="/license" class="hover:text-white">License (MIT)</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="mt-10 border-t border-border pt-6 text-xs text-fg-muted">
+      © {year} Ahmad Muslih Zain. Released under the MIT License.
+    </p>
+  </div>
+</footer>
