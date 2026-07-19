@@ -6,6 +6,8 @@ simultaneously**, each in its own dockable panel. Inspired by MQTT Explorer.
 Built with **Wails v2** (Go backend) + **React + TypeScript** (Vite frontend),
 styled with Blueprint 6.
 
+![Preview](assets/preview.png)
+
 ## Features
 
 - Multiple concurrent broker connections, each in a resizable / draggable /
