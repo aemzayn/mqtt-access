@@ -1,6 +1,6 @@
 build/bin
 node_modules
-frontend/dist
 .claude
 build/windows/installer/tmp
 .DS_Store
+dist
