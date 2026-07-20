@@ -1524,8 +1524,7 @@ html.no-flash .tree-row-flash {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: calc(11px * var(--font-scale));
-  font-family: var(--font-mono);
+  font-size: calc(12px * var(--font-scale));
 }
 
 .trend-card-topic {
