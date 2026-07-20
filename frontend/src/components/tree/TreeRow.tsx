@@ -1,5 +1,6 @@
 import { memo, useRef } from "react"
 import type { FlatRow } from "../../lib/topicMirror"
+import { Icon } from "@blueprintjs/core"
 
 export const ROW_HEIGHT = 22
 
@@ -41,7 +42,7 @@ export const TreeRow = memo(
             if (row.hasChildren) onToggle(row.path)
           }}
         >
-          {row.expanded ? "⌄" : "›"}
+          <Icon icon={row.expanded ? "chevron-down" : "chevron-right"} />
         </span>
 
         <span className="tree-segment">{row.segment}</span>
