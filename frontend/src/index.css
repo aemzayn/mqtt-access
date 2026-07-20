@@ -1266,7 +1266,7 @@ html.no-flash .tree-row-flash {
   min-height: 120px;
   border: 1px solid var(--input-border);
   border-radius: 2px;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 .code-editor .cm-editor {
