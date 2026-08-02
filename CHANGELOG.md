@@ -13,6 +13,13 @@ Release workflow:
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-08-02
+
+### Fixed
+- Tree rows now scroll vertically instead of clipping long content.
+- Replaced ad-hoc chevron symbols with Blueprint icons in the topic tree.
+- Increased topic tree row font size for better readability.
+
 ## [1.0.0] - 2026-07-19
 
 ### Added
@@ -68,6 +75,7 @@ Release workflow:
 - Rewrote README to project-specific documentation for Wails v2 + Go backend and React + TypeScript frontend.
 - Updated architecture, key-file references, development commands, and broker testing guidance.
 
-[Unreleased]: https://github.com/aemzayn/mqtt-access/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/aemzayn/mqtt-access/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/aemzayn/mqtt-access/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/aemzayn/mqtt-access/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/aemzayn/mqtt-access/releases/tag/v0.1.0
