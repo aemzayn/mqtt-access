@@ -102,6 +102,7 @@ export function flattenVisible(
   root: MirrorNode,
   expanded: ReadonlySet<string>,
   filter?: string,
+  collapsed?: ReadonlySet<string>,
 ): FlatRow[] {
   const rows: FlatRow[] = []
   const lowerFilter = filter?.toLowerCase()
@@ -111,7 +112,8 @@ export function flattenVisible(
       if (lowerFilter && !subtreeMatches(child, lowerFilter)) continue
       const hasChildren = child.children.size > 0
       const isExpanded =
-        hasChildren && (lowerFilter ? true : expanded.has(child.path))
+        hasChildren &&
+        (lowerFilter ? !collapsed?.has(child.path) : expanded.has(child.path))
       rows.push({
         path: child.path,
         segment: child.segment,
