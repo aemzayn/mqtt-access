@@ -14,6 +14,9 @@ export function TopicTree({ connectionId }: { connectionId: string }) {
     () => new Set<string>(),
   )
   const [filter, setFilter] = useState("")
+  const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(
+    () => new Set<string>(),
+  )
   const selected = useSelectionStore(s => s.selected[connectionId] ?? null)
   const parentRef = useRef<HTMLDivElement>(null)
   const t = useT()
@@ -30,8 +33,9 @@ export function TopicTree({ connectionId }: { connectionId: string }) {
         getMirror(connectionId).root,
         expanded,
         filter.trim() || undefined,
+        collapsed,
       ),
-    [connectionId, expanded, filter, version],
+    [connectionId, expanded, filter, collapsed, version],
   )
 
   const virtualizer = useVirtualizer({
@@ -42,6 +46,15 @@ export function TopicTree({ connectionId }: { connectionId: string }) {
   })
 
   const toggle = (path: string) => {
+    if (filter.trim()) {
+      setCollapsed(prev => {
+        const next = new Set(prev)
+        if (next.has(path)) next.delete(path)
+        else next.add(path)
+        return next
+      })
+      return
+    }
     setExpanded(prev => {
       const next = new Set(prev)
       if (next.has(path)) next.delete(path)
@@ -61,7 +74,10 @@ export function TopicTree({ connectionId }: { connectionId: string }) {
         className="tree-filter"
         leftIcon="filter"
         value={filter}
-        onChange={e => setFilter(e.target.value)}
+        onChange={e => {
+          setFilter(e.target.value)
+          setCollapsed(new Set())
+        }}
         placeholder={t("filterTopics")}
       />
 
