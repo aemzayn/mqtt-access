@@ -1,5 +1,6 @@
 import { Icon } from "@blueprintjs/core"
 import { buildJsonLines, getValueAtPath } from "../../lib/json"
+import { SyntaxTokens } from "../ui/SyntaxText"
 import { useT } from "../../i18n"
 
 export function JsonView({
@@ -7,11 +8,13 @@ export function JsonView({
   previousValue,
   showDiff,
   onAddTrend,
+  searchQuery = "",
 }: {
   value: unknown
   previousValue?: unknown
   showDiff?: boolean
   onAddTrend?: (path: string, numeric: number) => void
+  searchQuery?: string
 }) {
   const t = useT()
   const lines = buildJsonLines(value)
@@ -30,15 +33,7 @@ export function JsonView({
             className={`json-line${changed ? " json-line-changed" : ""}`}
             style={{ paddingLeft: line.depth * 14 }}
           >
-            {line.tokens.map((tok, j) =>
-              tok.cls ? (
-                <span key={j} className={tok.cls}>
-                  {tok.text}
-                </span>
-              ) : (
-                <span key={j}>{tok.text}</span>
-              ),
-            )}
+            <SyntaxTokens tokens={line.tokens} searchQuery={searchQuery} />
             {onAddTrend && line.numeric !== null && line.path !== null && (
               <button
                 type="button"

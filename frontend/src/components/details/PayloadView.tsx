@@ -4,6 +4,7 @@ import { Button, ButtonGroup } from "@blueprintjs/core"
 import type { MessageRecord } from "../../ipc/types"
 import { detectPayloadType, type PayloadType } from "../../lib/json"
 import { b64ByteLength } from "../../lib/b64"
+import { countSearchMatches } from "../../lib/search"
 import { formatTimeMs } from "../../lib/time"
 import { useT, type MsgKey } from "../../i18n"
 import { CopyButton } from "../ui/CopyButton"
@@ -47,6 +48,7 @@ export function PayloadView({
 }) {
   const t = useT()
   const [mode, setMode] = useState<Mode>("diff")
+  const [searchQuery, setSearchQuery] = useState("")
 
   if (!message) {
     return <div className="details-empty">{t("noMessageYet")}</div>
@@ -115,6 +117,21 @@ export function PayloadView({
 
       <div className="payload-controls">
         <TypeBadge type={type} />
+        <input
+          className="payload-search"
+          type="search"
+          value={searchQuery}
+          onChange={event => setSearchQuery(event.target.value)}
+          placeholder={t("searchPayload")}
+          aria-label={t("searchPayload")}
+        />
+        {searchQuery && (
+          <span className="payload-search-count" aria-live="polite">
+            {t("searchMatches", {
+              n: countSearchMatches(currentText, searchQuery),
+            })}
+          </span>
+        )}
         <ButtonGroup>
           <Button
             size="small"
@@ -139,13 +156,18 @@ export function PayloadView({
           previousValue={previousParsed}
           showDiff={mode === "diff"}
           onAddTrend={path => addTrend(path)}
+          searchQuery={searchQuery}
         />
       ) : mode === "raw" ? (
         <pre className="payload-text">
-          <SyntaxText text={currentText} />
+          <SyntaxText text={currentText} searchQuery={searchQuery} />
         </pre>
       ) : (
-        <TextDiffPreview previous={previous} message={message} />
+        <TextDiffPreview
+          previous={previous}
+          message={message}
+          searchQuery={searchQuery}
+        />
       )}
     </div>
   )
@@ -154,9 +176,11 @@ export function PayloadView({
 function TextDiffPreview({
   previous,
   message,
+  searchQuery,
 }: {
   previous: MessageRecord | null
   message: MessageRecord
+  searchQuery: string
 }) {
   const t = useT()
   const currentText = textForMessage(message)
@@ -164,7 +188,7 @@ function TextDiffPreview({
   if (!previous || previous.payloadUtf8 == null) {
     return (
       <pre className="payload-text">
-        <SyntaxText text={currentText} />
+        <SyntaxText text={currentText} searchQuery={searchQuery} />
       </pre>
     )
   }
@@ -175,7 +199,7 @@ function TextDiffPreview({
       <>
         <div className="diff-note">{t("identicalPrevious")}</div>
         <pre className="payload-text">
-          <SyntaxText text={currentText} />
+          <SyntaxText text={currentText} searchQuery={searchQuery} />
         </pre>
       </>
     )
@@ -195,7 +219,7 @@ function TextDiffPreview({
                 : undefined
           }
         >
-          <SyntaxText text={part.value} />
+          <SyntaxText text={part.value} searchQuery={searchQuery} />
         </span>
       ))}
     </pre>
