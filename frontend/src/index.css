@@ -1330,6 +1330,28 @@ html.no-flash .tree-row-flash {
   flex-wrap: wrap;
 }
 
+.payload-search {
+  width: min(220px, 100%);
+  padding: 4px 7px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-alt);
+  color: var(--text);
+  font: inherit;
+  font-size: calc(11px * var(--font-scale));
+}
+
+.payload-search-count {
+  color: var(--text-dim);
+  font-size: calc(11px * var(--font-scale));
+}
+
+.payload-search-match {
+  background: var(--accent);
+  color: var(--button-text);
+  border-radius: 2px;
+}
+
 /* Blueprint's default "active" state is too close to the resting state to
    read as selected — make Diff/Raw/Prettify/type toggles unambiguous.
    !important: needed to outrank .bp6-button:not(.bp6-minimal):not(.bp6-intent-primary),
