@@ -4,3 +4,4 @@ node_modules
 build/windows/installer/tmp
 .DS_Store
 dist
+frontend/package.json.md5
