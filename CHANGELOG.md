@@ -13,6 +13,19 @@ Release workflow:
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-04
+
+### Added
+- Search within received payloads in the Value tab, with match highlighting.
+
+### Changed
+- Windows installer now installs to `Program Files\MQTT Access` instead of
+  nesting under a company folder.
+
+### Fixed
+- Topic nodes can now be collapsed while the tree filter is active.
+- Long strings in the JSON preview wrap instead of overflowing.
+
 ## [1.0.1] - 2026-08-02
 
 ### Fixed
@@ -75,7 +88,8 @@ Release workflow:
 - Rewrote README to project-specific documentation for Wails v2 + Go backend and React + TypeScript frontend.
 - Updated architecture, key-file references, development commands, and broker testing guidance.
 
-[Unreleased]: https://github.com/aemzayn/mqtt-access/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/aemzayn/mqtt-access/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/aemzayn/mqtt-access/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/aemzayn/mqtt-access/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/aemzayn/mqtt-access/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/aemzayn/mqtt-access/releases/tag/v0.1.0
