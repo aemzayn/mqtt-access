@@ -7,6 +7,7 @@ import { b64ByteLength } from "../../lib/b64"
 import { countSearchMatches } from "../../lib/search"
 import { formatTimeMs } from "../../lib/time"
 import { useT, type MsgKey } from "../../i18n"
+import { publish } from "../../ipc/commands"
 import { CopyButton } from "../ui/CopyButton"
 import { SyntaxText } from "../ui/SyntaxText"
 import { JsonView } from "./JsonView"
@@ -49,6 +50,26 @@ export function PayloadView({
   const t = useT()
   const [mode, setMode] = useState<Mode>("diff")
   const [searchQuery, setSearchQuery] = useState("")
+  const [isResending, setIsResending] = useState(false)
+  const [resent, setResent] = useState(false)
+
+  const handleResend = async () => {
+    if (!message || isResending) return
+    setIsResending(true)
+    try {
+      await publish(
+        connectionId,
+        topic,
+        message.payloadB64,
+        message.qos,
+        message.retain,
+      )
+      setResent(true)
+      setTimeout(() => setResent(false), 2000)
+    } finally {
+      setIsResending(false)
+    }
+  }
 
   if (!message) {
     return <div className="details-empty">{t("noMessageYet")}</div>
@@ -59,10 +80,22 @@ export function PayloadView({
       <div className="payload-view">
         <div className="payload-head">
           <PayloadMeta message={message} />
-          <CopyButton
-            getText={() => message.payloadB64}
-            title={t("copyPayload")}
-          />
+          <div className="payload-head-actions">
+            <Button
+              size="small"
+              variant="minimal"
+              icon={resent ? "tick" : "repeat"}
+              intent={resent ? "success" : "none"}
+              loading={isResending}
+              title={resent ? t("published") : t("resendPayload")}
+              aria-label={t("resendPayload")}
+              onClick={handleResend}
+            />
+            <CopyButton
+              getText={() => message.payloadB64}
+              title={t("copyPayload")}
+            />
+          </div>
         </div>
         <TypeBadge type="binary" />
         <div className="payload-binary">
@@ -111,6 +144,16 @@ export function PayloadView({
               onClick={() => addTrend(null)}
             />
           )}
+          <Button
+            size="small"
+            variant="minimal"
+            icon={resent ? "tick" : "repeat"}
+            intent={resent ? "success" : "none"}
+            loading={isResending}
+            title={resent ? t("published") : t("resendPayload")}
+            aria-label={t("resendPayload")}
+            onClick={handleResend}
+          />
           <CopyButton getText={() => currentText} title={t("copyPayload")} />
         </div>
       </div>
